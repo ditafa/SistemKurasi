@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('product_photos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->foreignId('variation_id')->nullable()->constrained('product_variations')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); // Relasi dengan products
+            $table->foreignId('variation_id')->nullable()->constrained('product_variations')->onDelete('cascade'); // Relasi dengan product_variations
             $table->string('url')->comment('URL foto produk atau variasi');
             $table->timestamps();
         });

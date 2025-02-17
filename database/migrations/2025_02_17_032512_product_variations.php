@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); // Relasi dengan products
             $table->string('name')->comment('Nama variasi, misal: Warna Merah, Size M');
             $table->decimal('price', 10, 2);
             $table->timestamps();
@@ -22,3 +22,4 @@ return new class extends Migration
         Schema::dropIfExists('product_variations');
     }
 };
+
