@@ -9,21 +9,20 @@ class CategoriesTableSeeder extends Seeder
 {
     public function run()
     {
-        // Menambahkan kategori tanpa parent (kategori utama)
+        // Hapus semua data dan reset ID agar tidak bentrok
+        DB::statement('TRUNCATE TABLE categories RESTART IDENTITY CASCADE');
+
+        // Menambahkan kategori utama
         DB::table('categories')->insert([
-            'name' => 'Elektronik',
-            'parent_id' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
+            ['name' => 'Elektronik', 'parent_id' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Pakaian', 'parent_id' => null, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
-        // Menambahkan kategori dengan parent
+        // Menambahkan subkategori
         DB::table('categories')->insert([
-            'name' => 'Smartphone',
-            'parent_id' => 1, // ID kategori Elektronik
-            'created_at' => now(),
-            'updated_at' => now(),
+            ['name' => 'Smartphone', 'parent_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Kemeja', 'parent_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Jaket', 'parent_id' => 2, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }
-

@@ -9,10 +9,19 @@ class ProductPhoto extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'photo_url'];
+    protected $table = 'product_photos';
 
+    protected $fillable = ['product_id', 'variation_id', 'url', 'created_at'];
+
+    // Relasi dengan Product (Produk utama)
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    // Relasi dengan ProductVariation (Variasi produk)
+    public function variation()
+    {
+        return $this->belongsTo(ProductVariation::class);
     }
 }

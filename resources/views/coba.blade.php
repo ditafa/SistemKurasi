@@ -3,22 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Produk</title>
+    <title>Kurasi Produk Bantul</title>
+    <link rel="icon" href="https://diskominfo.bantulkab.go.id/assets/Site/img/favicon.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Function to filter products based on status selection
+        function filterStatus() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const productItems = document.querySelectorAll('.product-item');
+
+            productItems.forEach(item => {
+                const productStatus = item.getAttribute('data-status');
+                if (statusFilter === 'Status' || productStatus === statusFilter) {
+                    item.style.display = 'grid'; // Show product
+                } else {
+                    item.style.display = 'none'; // Hide product
+                }
+            });
+        }
+    </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Header -->
     <header class="bg-blue-400 text-white py-4 px-4">
         <div class="max-w-6xl mx-auto">
-            <p class="text-xs font-bold mb-2">LOGO</p>
+            <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/favicon.png" alt="Kemeja Wanita" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
             <h1 class="text-xl font-semibold text-center mb-1">Daftar Produk</h1>
             <p class="text-sm text-center text-white/90 leading-tight px-4">
                 Admin dapat meninjau setiap produk yang diajukan serta mencatat riwayat perubahan status secara transparan.
             </p>
         </div>
     </header>
-    
+
     <!-- Main Content -->
     <main class="flex-grow p-4">
         <div class="max-w-6xl mx-auto my-4">
@@ -31,192 +48,163 @@
                     </span>
                 </div>
                 <div class="w-full md:w-32">
-                    <select class="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none bg-white">
+                    <select id="status-filter" onchange="filterStatus()" class="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none bg-white">
                         <option>Status</option>
                         <option>Diterima</option>
                         <option>Ditolak</option>
                         <option>Revisi</option>
                     </select>
                 </div>
+                <div class="w-full md:w-32">
+                    <select class="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none bg-white">
+                        <option>Kategori</option>
+                        <option>Fashion Wanita</option>
+                        <option>Fashion Pria</option>
+                        <option>Sepatu Wanita</option>
+                        <option>Sepatu Pria</option>
+                        <option>Aksesoris</option>
+                    </select>
+                </div>
             </div>
-            
+
             <!-- Products Table -->
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-                <div class="grid grid-cols-4 py-3 px-4 text-sm font-medium text-blue-500">
+                <div class="grid grid-cols-5 py-3 px-4 text-sm font-medium text-blue-500">
                     <div class="pl-3">Produk</div>
+                    <div>Kategori</div>
                     <div>Harga</div>
                     <div>Status</div>
                     <div>Aksi</div>
                 </div>
-                
+
                 <!-- Product Items -->
                 <div class="divide-y divide-gray-200">
-                    <!-- Kemeja Wanita -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
+                    <!-- Item 1 -->
+                    <div class="product-item grid grid-cols-5 items-center py-3 px-4" data-status="Diterima">
                         <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Kemeja Wanita" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
+                            <img src="https://media.karousell.com/media/photos/products/2024/2/6/kemeja_wanita_polos_warna_biru_1707191153_90e877cd_progressive" alt="Kemeja Wanita" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
                             <div>
-                                <p class="text-blue-600 font-medium">Kemeja Wanita</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
+                                <p class="text-blue-600 font-medium">Kemeja</p>
+                                <p class="text-xs text-gray-500">Variasi</p>
                                 <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Putih</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Katun</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">XL</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">Sepatu</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">High</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-sm">Rp. 280.000</div>
+                        <div class="text-sm text-gray-500">Fashion Wanita Kemeja</div>
+                        <div class="text-sm">Rp. 250.000</div>
                         <div><span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">Diterima</span></div>
-                        <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
+                        <div><a href="{{ url('/detail') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</a></div>
                     </div>
-                    
-                    <!-- Pashmina Premium -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
+
+                    <!-- Item 2 -->
+                    <div class="product-item grid grid-cols-5 items-center py-3 px-4" data-status="Ditolak">
                         <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Pashmina Premium" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
+                            <img src="https://media.karousell.com/media/photos/products/2023/12/12/kemeja_wanita_polos_lengan_pan_1702347438_f31eabd0_progressive" alt="Flastemino Pashmina" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
                             <div>
-                                <p class="text-blue-600 font-medium">Pashmina Premium</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
+                                <p class="text-blue-600 font-medium">Flastemino Pashmina</p>
+                                <p class="text-xs text-gray-500">Variasi</p>
                                 <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Premium</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Cotton</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">Sepatu</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">High</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-sm">Rp. 599.000</div>
+                        <div class="text-sm text-gray-500">Fashion Aksesoris Wanita Jilbab</div>
+                        <div class="text-sm">Rp. 550.000</div>
                         <div><span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Ditolak</span></div>
                         <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
                     </div>
-                    
-                    <!-- Rok Coklat -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
+
+                    <!-- Item 3 -->
+                    <div class="product-item grid grid-cols-5 items-center py-3 px-4" data-status="Revisi">
                         <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Rok Coklat" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
+                            <img src="https://www.aio.co.id/cms/lib/images/product/pocari-sweat-banner.jpg" alt="Rok Celana" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
                             <div>
-                                <p class="text-blue-600 font-medium">Rok Coklat</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
+                                <p class="text-blue-600 font-medium">Rok Celana</p>
+                                <p class="text-xs text-gray-500">Variasi</p>
                                 <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Coklat</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">Sepatu</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">High</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-sm">Rp. 559.000</div>
-                        <div><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs">Revisi</span></div>
+                        <div class="text-sm text-gray-500">Fashion Wanita Bawahan</div>
+                        <div class="text-sm">Rp. 650.000</div>
+                        <div><span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs">Revisi</span></div>
                         <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
                     </div>
-                    
-                    <!-- Kemeja Pria -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
+
+                    <div class="product-item grid grid-cols-5 items-center py-3 px-4" data-status="Ditolak">
                         <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Kemeja Pria" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
+                            <img src="https://media.karousell.com/media/photos/products/2023/12/12/kemeja_wanita_polos_lengan_pan_1702347438_f31eabd0_progressive" alt="Flastemino Pashmina" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
                             <div>
-                                <p class="text-blue-600 font-medium">Kemeja Pria</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
+                                <p class="text-blue-600 font-medium">Flastemino Pashmina</p>
+                                <p class="text-xs text-gray-500">Variasi</p>
                                 <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Hitam</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Katun</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Tebal</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">Sepatu</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">High</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-sm">Rp. 499.000</div>
-                        <div><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs">Revisi</span></div>
-                        <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
-                    </div>
-                    
-                    <!-- Celana Pria -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
-                        <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Celana Pria" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
-                            <div>
-                                <p class="text-blue-600 font-medium">Celana Pria</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
-                                <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Hitam</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">XL</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Tebal</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-sm">Rp. 599.000</div>
-                        <div><span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">Diajukan</span></div>
-                        <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
-                    </div>
-                    
-                    <!-- Sandal -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
-                        <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Sandal" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
-                            <div>
-                                <p class="text-blue-600 font-medium">Sandal</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
-                                <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Hitam</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-sm">Rp. 199.000</div>
-                        <div><span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">Diterima</span></div>
-                        <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
-                    </div>
-                    
-                    <!-- Sepatu -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
-                        <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Sepatu" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
-                            <div>
-                                <p class="text-blue-600 font-medium">Sepatu</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
-                                <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Hitam</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Abu</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">42cm</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-sm">Rp. 199.000</div>
+                        <div class="text-sm text-gray-500">Fashion Aksesoris Wanita Jilbab</div>
+                        <div class="text-sm">Rp. 550.000</div>
                         <div><span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Ditolak</span></div>
                         <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
                     </div>
-                    
-                    <!-- Heels -->
-                    <div class="grid grid-cols-4 items-center py-3 px-4">
+
+                    <div class="product-item grid grid-cols-5 items-center py-3 px-4" data-status="Revisi">
                         <div class="flex items-center gap-3">
-                            <img src="/api/placeholder/80/80" alt="Heels" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
+                            <img src="https://www.aio.co.id/cms/lib/images/product/pocari-sweat-banner.jpg" alt="Rok Celana" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
                             <div>
-                                <p class="text-blue-600 font-medium">Heels</p>
-                                <p class="text-xs text-gray-500">Vettel</p>
+                                <p class="text-blue-600 font-medium">Rok Celana</p>
+                                <p class="text-xs text-gray-500">Variasi</p>
                                 <div class="flex flex-wrap gap-1 mt-1">
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Hitam</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Abu</span>
-                                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">42cm</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">Sepatu</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">High</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-sm">Rp. 649.000</div>
-                        <div><span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">Diajukan</span></div>
+                        <div class="text-sm text-gray-500">Fashion Wanita Bawahan</div>
+                        <div class="text-sm">Rp. 650.000</div>
+                        <div><span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs">Revisi</span></div>
                         <div><button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</button></div>
                     </div>
+
+                    <div class="product-item grid grid-cols-5 items-center py-3 px-4" data-status="Diterima">
+                        <div class="flex items-center gap-3">
+                            <img src="https://media.karousell.com/media/photos/products/2024/2/6/kemeja_wanita_polos_warna_biru_1707191153_90e877cd_progressive" alt="Kemeja Wanita" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
+                            <div>
+                                <p class="text-blue-600 font-medium">Kemeja</p>
+                                <p class="text-xs text-gray-500">Variasi</p>
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">Sepatu</span>
+                                    <span class="px-2 py-0.5 text-xs bg-gray-200 rounded-full">High</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500">Fashion Wanita Kemeja</div>
+                        <div class="text-sm">Rp. 250.000</div>
+                        <div><span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">Diterima</span></div>
+                        <div><a href="{{ url('/detail') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Lihat Detail</a></div>
+                    </div>
+
+                    <!-- Add more items as needed... -->
                 </div>
             </div>
-            
+
             <!-- Pagination -->
-            <div class="flex justify-center mt-6 gap-1">
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100"><i class="fas fa-chevron-left text-xs text-gray-500"></i></a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-blue-500 rounded bg-blue-500 text-white font-medium">1</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">2</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">3</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">4</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">5</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">6</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">7</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">8</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-gray-600">9</a>
-                <a href="#" class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100"><i class="fas fa-chevron-right text-xs text-gray-500"></i></a>
+            <div class="flex justify-center mt-4 gap-1">
+                <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md bg-blue-500 text-white">1</button>
+                <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md">2</button>
+                <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md">3</button>
+                <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md">4</button>
+                <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md">5</button>
             </div>
         </div>
     </main>
-    
+
     <!-- Footer -->
     <footer class="bg-blue-400 text-white py-3 mt-auto">
         <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">

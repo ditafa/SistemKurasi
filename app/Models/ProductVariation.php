@@ -11,8 +11,15 @@ class ProductVariation extends Model
 
     protected $fillable = ['product_id', 'name', 'price'];
 
+    // Relasi dengan Product (Parent produk)
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    // Relasi dengan ProductPhoto (Foto produk variasi)
+    public function photos()
+    {
+        return $this->hasMany(ProductPhoto::class);
     }
 }
