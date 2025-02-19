@@ -26,13 +26,13 @@ class ProductPhotosTableSeeder extends Seeder
            [
                'product_id' => 1,
                'variation_id' => 2, // Putih - Size L
-               'url' => 'https://down-id.img.susercontent.com/file/690553ee99c888fdba1bab371ecc11f3',
+               'url' => 'https://down-id.img.susercontent.com/file/sg-11134201-7rbnk-lp83s09fjdxi61',
                'created_at' => Carbon::now()->subDays(3)->setTime(13, 21, 0)->format('Y-m-d H:i:s'),
            ],
            [
                'product_id' => 1,
                'variation_id' => 3, // Biru - Size M
-               'url' => 'https://down-id.img.susercontent.com/file/id-11134207-7qul0-ljz8fiy6511b35',
+               'url' => 'https://down-id.img.susercontent.com/file/688db4bd400774af2057ed12df56767d',
                'created_at' => Carbon::now()->subDays(3)->setTime(13, 22, 0)->format('Y-m-d H:i:s'),
            ],
            [

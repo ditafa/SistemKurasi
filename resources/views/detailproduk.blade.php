@@ -290,7 +290,8 @@
                                             <h4 class="text-base font-semibold text-blue-600">
                                                 {{ 'Diajukan' }}
                                             </h4>
-                                            <p class="text-sm text-gray-500">Status produk saat ini</p>
+                                            <p class="text-sm text-gray-500">{{'Belum ada catatan' }}</p>
+
                                             <p class="text-xs text-gray-400">
                                                 Tanggal: {{ $product->created_at ? $product->created_at->format('d F Y H:i') : now()->format('d F Y H:i') }}
                                             </p>
@@ -301,7 +302,7 @@
                                                 $statusColor = match($product->formatted_status) {
                                                     'Diterima' => 'green',
                                                     'Ditolak' => 'red',
-                                                    'Diterima dengan Revisi' => 'yellow',
+                                                    'Diterima dengan Revisi', 'Revisi' => 'yellow',
                                                     default => 'blue'
                                                 };
                                             @endphp
@@ -313,7 +314,13 @@
                                                 <h4 class="text-base font-semibold text-{{ $statusColor }}-600">
                                                     {{ $product->formatted_status ?? 'Status Tidak Tersedia' }}
                                                 </h4>
-                                                <p class="text-sm text-gray-500">Status produk saat ini</p>
+
+                                                {{-- Tampilkan Catatan Revisi hanya jika statusnya "Revisi" atau "Diterima dengan Revisi" --}}
+                                                @if (in_array($product->formatted_status, ['Revisi', 'Diterima dengan Revisi']))
+                                                    <p class="text-sm text-gray-500">Catatan Revisi:</p>
+                                                @endif
+                                                <p class="text-sm text-gray-500">{{ $product->latestHistory->notes ?? 'Belum ada catatan' }}</p>
+
                                                 <p class="text-xs text-gray-400">
                                                     Tanggal: {{ optional($product->created_at)->format('d F Y H:i') ?? now()->format('d F Y H:i') }}
                                                 </p>
@@ -321,6 +328,7 @@
                                         @else
                                             <p class="text-sm text-red-500">Produk tidak ditemukan.</p>
                                         @endif
+
                                     </div>
                                 </div>
                             </div>

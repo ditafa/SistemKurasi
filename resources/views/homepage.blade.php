@@ -50,32 +50,52 @@
                     </span>
                 </div>
                 <div class="relative w-full md:w-32">
-                    <select name="status" onchange="filterProducts()" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
-                        <option value="" disabled selected hidden>Status</option>
-                        <option value="all">Semua</option> <!-- Tambahkan opsi "Semua" -->
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select>
+                <select name="status" onchange="filterProducts(this)" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
+                    <option value="" disabled selected hidden>Status</option>
+                    <option value="{{ url('/') }}">Semua</option> <!-- Arahkan ke halaman utama -->
+                    @foreach($statuses as $status)
+                        <option value="{{ request()->fullUrlWithQuery(['status' => $status]) }}" 
+                            {{ request('status') == $status ? 'selected' : '' }}>
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <script>
+                    function filterProducts(select) {
+                        var selectedValue = select.value;
+                        if (selectedValue) {
+                            window.location.href = selectedValue; // Redirect ke URL yang dipilih
+                        }
+                    }
+                </script>
                     <img src="{{ 'https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/arrow-down-icon.png' }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
                 </div>
 
                 <div class="relative w-full md:w-32">
-                    <select name="category" onchange="filterProducts()" 
+                    <select name="category" onchange="filterCategory(this)" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
-                        <option value="" disabled selected hidden>Kategori</option>
+                        <option value="{{ url('/') }}">Semua</option> <!-- Kembali ke halaman utama -->
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                            <option value="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}" 
+                                {{ request('category') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                         @endforeach
                     </select>
-                    <img src="{{ 'https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/arrow-down-icon.png' }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
+                    <img src="https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/arrow-down-icon.png" 
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
                 </div>
 
+                <script>
+                    function filterCategory(select) {
+                        var selectedValue = select.value;
+                        if (selectedValue) {
+                            window.location.href = selectedValue; // Redirect ke URL filter
+                        }
+                    }
+                </script>
 
             </form>
 
@@ -115,7 +135,10 @@
                             </div>
                         </div>
                         <div class="text-sm text-gray-600">
-                            {{ $product->category ? $product->category->name : 'Tanpa Kategori' }}
+                        <div class="text-sm text-gray-600">
+                        {{ $product->rootCategory ? $product->rootCategory->name : 'Tanpa Kategori' }}
+                    </div>
+
                         </div>
                         <div class="text-sm font-medium">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                         <div>

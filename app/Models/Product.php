@@ -42,6 +42,12 @@ class Product extends Model
         return $this->hasMany(ProductStatusHistory::class);
     }
 
+    public function latestHistory()
+    {
+        return $this->hasOne(ProductStatusHistory::class)->latestOfMany();
+    }
+
+
     // Accessor untuk format status tampilan
     public function getFormattedStatusAttribute()
     {
