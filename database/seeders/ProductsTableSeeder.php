@@ -4,47 +4,61 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProductsTableSeeder extends Seeder
 {
     public function run()
     {
-        // Hapus semua data sebelum menambahkan yang baru
+        Carbon::setLocale('id');
+        date_default_timezone_set('Asia/Jakarta');
+        
         DB::table('products')->truncate();
 
         DB::table('products')->insert([
             [
                 'user_id' => 2,
-                'category_id' => 3, // Subkategori "Smartphone" (parent: Elektronik)
-                'name' => 'Smartphone XYZ',
-                'description' => 'Smartphone dengan spesifikasi tinggi',
-                'price' => 5000000.00,
-                'type' => 'single',
+                'category_id' => 3,
+                'name' => 'Kemeja Pria Premium',
+                'description' => 'Kemeja pria lengan panjang berbahan katun premium',
+                'price' => 299000.00,
+                'type' => 'variation',
                 'status' => 'diajukan',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
             [
                 'user_id' => 2,
-                'category_id' => 5, // Subkategori "Jaket" (parent: Pakaian)
-                'name' => 'Jaket Musim Dingin',
-                'description' => 'Jaket tebal untuk cuaca dingin',
-                'price' => 800000.00,
-                'type' => 'single',
+                'category_id' => 3,
+                'name' => 'Kemeja Wanita Elegant',
+                'description' => 'Kemeja wanita modern dengan desain elegant',
+                'price' => 275000.00,
+                'type' => 'variation',
                 'status' => 'diterima',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
             [
-                'user_id' => 2,
-                'category_id' => 4, // Subkategori "Kemeja" (parent: Pakaian)
-                'name' => 'Kemeja Formal',
-                'description' => 'Kemeja lengan panjang untuk acara formal',
-                'price' => 350000.00,
-                'type' => 'single',
-                'status' => 'diajukan',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'user_id' => 3,
+                'category_id' => 4,
+                'name' => 'Kaos Jogja Heritage',
+                'description' => 'Kaos dengan desain khas Jogja',
+                'price' => 125000.00,
+                'type' => 'variation',
+                'status' => 'revisi',
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ],
+            [
+                'user_id' => 3,
+                'category_id' => 5,
+                'name' => 'Sepatu Jogja Handmade',
+                'description' => 'Sepatu lokal produksi Jogja dengan kualitas premium',
+                'price' => 450000.00,
+                'type' => 'variation',
+                'status' => 'ditolak',
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
         ]);
     }

@@ -30,13 +30,6 @@
                 </a>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex justify-end mb-6 gap-2">
-                <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Terima</button>
-                <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Revisi</button>
-                <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Tolak</button>
-            </div>
-
             <!-- Product Detail -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -44,18 +37,26 @@
                     <div class="col-span-1">
                         <div class="border rounded-md p-2 mb-4">
                             <div class="relative pb-[100%]">
-                                <img src="{{ $product->image_url ?? '' }}" 
+                                <img src="{{ asset('storage/' . $product->image_url) }}" 
                                      alt="{{ $product->name ?? 'Product Image' }}" 
                                      class="absolute inset-0 w-full h-full object-contain">
                             </div>
                         </div>
+
+                        <!-- Variasi Gambar -->
+                        @if(isset($product->additional_images) && count($product->additional_images) > 0)
                         <div class="grid grid-cols-3 gap-2">
-                            <div class="border rounded-md p-1 cursor-pointer hover:border-blue-500">
-                                <img src="{{ $product->image_url ?? 'https://cdn3d.iconscout.com/3d/premium/thumb/product-3d-icon-download-in-png-blend-fbx-gltf-file-formats--tag-packages-box-marketing-advertisement-pack-branding-icons-4863042.png?f=webp' }}" 
-                                     alt="Product thumbnail" 
-                                     class="w-full h-auto">
-                            </div>
+                            @foreach($product->additional_images as $image)
+                                <div class="border rounded-md p-1 cursor-pointer hover:border-blue-500">
+                                    <img src="{{ asset('storage/' . $image) }}" 
+                                         alt="Product thumbnail" 
+                                         class="w-full h-auto">
+                                </div>
+                            @endforeach
                         </div>
+                        @else
+                            <p>Gambar variasi tidak tersedia.</p>
+                        @endif
                     </div>
 
                     <!-- Product Info -->
@@ -70,6 +71,22 @@
                             <p class="text-sm text-gray-700 mb-6">
                                 {{ $product->description ?? 'Deskripsi produk belum tersedia.' }}
                             </p>
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">
+                                    <span class="font-medium">Variasi Produk:</span>
+                                </p>
+                                <div class="space-x-2">
+                                    @forelse ($product->variations as $variation)
+                                        <span class="inline-block bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+                                            {{ $variation->name }}
+                                        </span>
+                                    @empty
+                                        <span class="inline-block bg-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">
+                                            Tidak ada variasi
+                                        </span>
+                                    @endforelse
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Colors and Sizes -->
@@ -105,6 +122,13 @@
                                 Rp {{ number_format($product->price ?? 0, 0, ',', '.') }}
                             </h2>
                         </div>
+                        <h3 class="text-lg font-medium mb-4">Pilih Status:</h3>
+                        <!-- Action Buttons (Pindah ke bawah harga) -->
+                        <div class=" mb-6 gap-2">
+                            <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Terima</button>
+                            <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Revisi</button>
+                            <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Tolak</button>
+                        </div>
 
                         <!-- Timeline -->
                         <div>
@@ -112,7 +136,7 @@
                             <div class="relative">
                                 <!-- Timeline Line -->
                                 <div class="absolute h-full w-px bg-gray-300 left-4"></div>
-                                
+                                 
                                 <!-- Timeline Events -->
                                 <div class="ml-8 space-y-8">
                                     <!-- Default status if no history -->
@@ -122,6 +146,18 @@
                                         </div>
                                         <div>
                                             <h4 class="text-base font-semibold text-blue-600">
+                                                {{ 'Diajukan' }}
+                                            </h4>
+                                            <p class="text-sm text-gray-500">Status produk saat ini</p>
+                                            <p class="text-xs text-gray-400">
+                                                Tanggal: {{ $product->created_at ? $product->created_at->format('d F Y H:i') : now()->format('d F Y H:i') }}
+                                            </p>
+                                        </div>
+                                        <div class="absolute -left-8 mt-1.5">
+                                            <div class="w-4 h-4 rounded-full bg-green-500 border-4 border-white"></div>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-base font-semibold text-green-600">
                                                 {{ $product->status ?? 'Diajukan' }}
                                             </h4>
                                             <p class="text-sm text-gray-500">Status produk saat ini</p>

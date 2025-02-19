@@ -4,25 +4,53 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CategoriesTableSeeder extends Seeder
 {
     public function run()
     {
-        // Hapus semua data dan reset ID agar tidak bentrok
-        DB::statement('TRUNCATE TABLE categories RESTART IDENTITY CASCADE');
+        Carbon::setLocale('id');
+        date_default_timezone_set('Asia/Jakarta');
+        
+        DB::table('categories')->truncate();
 
-        // Menambahkan kategori utama
+        // Parent Categories
         DB::table('categories')->insert([
-            ['name' => 'Elektronik', 'parent_id' => null, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Pakaian', 'parent_id' => null, 'created_at' => now(), 'updated_at' => now()],
+            [
+                'name' => 'Pakaian',
+                'parent_id' => null,
+                'created_at' => Carbon::now()->setTime(8, 30, 0)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->setTime(8, 30, 0)->format('Y-m-d H:i:s'),
+            ],
+            [
+                'name' => 'Sepatu',
+                'parent_id' => null,
+                'created_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
+            ],
         ]);
 
-        // Menambahkan subkategori
+        // Child Categories
         DB::table('categories')->insert([
-            ['name' => 'Smartphone', 'parent_id' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Kemeja', 'parent_id' => 2, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Jaket', 'parent_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+            [
+                'name' => 'Kemeja',
+                'parent_id' => 1,
+                'created_at' => Carbon::now()->setTime(8, 40, 0)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->setTime(8, 40, 0)->format('Y-m-d H:i:s'),
+            ],
+            [
+                'name' => 'Kaos',
+                'parent_id' => 1,
+                'created_at' => Carbon::now()->setTime(8, 45, 0)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->setTime(8, 45, 0)->format('Y-m-d H:i:s'),
+            ],
+            [
+                'name' => 'Sepatu Casual',
+                'parent_id' => 2,
+                'created_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
+            ],
         ]);
     }
 }

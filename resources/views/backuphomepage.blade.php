@@ -74,7 +74,7 @@
             <!-- Products Table -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all hover:shadow-xl">
                 <!-- Header with border -->
-                <div class="grid grid-cols-5 py-4 px-6 text-sm font-semibold text-gray-600 border-b border-gray-100 bg-gray-50 text-center">
+                <div class="grid grid-cols-5 py-4 px-6 text-sm font-semibold text-gray-600 border-b border-gray-100 bg-gray-50">
                     <div class="pl-3">Produk</div>
                     <div>Kategori</div>
                     <div>Harga</div>
@@ -83,7 +83,7 @@
                 </div>
 
                 @foreach($products as $product)
-                    <div class="product-item grid grid-cols-5 items-center py-4 px-6 border-b border-gray-100 hover:bg-gray-50 transition-colors text-center">
+                    <div class="product-item grid grid-cols-5 items-center py-4 px-6 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                         <div class="flex items-center gap-4">
                             @if($product->first_photo)
                                 <img src="{{ $product->first_photo->url }}" alt="{{ $product->name }}" 
@@ -91,7 +91,6 @@
                             @endif
                             <div>
                                 <p class="text-blue-600 font-medium mb-1">{{ $product->name }}</p>
-                                <p class="text-xs text-gray-500 text-left">Variasi :</p>
                                 <div class="flex flex-wrap gap-2">
                                     @if($product->category)
                                         <span class="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">
@@ -111,11 +110,17 @@
                         </div>
                         <div class="text-sm font-medium">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                         <div>
-                            <span class="{{ $product->statusColor['bg'] }} {{ $product->statusColor['text'] }} px-3 py-1 rounded-full text-xs font-medium">
+                            @php
+                                $statusColor = match($product->status) {
+                                    'Diterima' => ['bg' => 'green-100', 'text' => 'green-600'],
+                                    'Ditolak' => ['bg' => 'red-100', 'text' => 'red-600'],
+                                    default => ['bg' => 'yellow-100', 'text' => 'yellow-600'],
+                                };
+                            @endphp
+                            <span class="bg-{{ $statusColor['bg'] }} text-{{ $statusColor['text'] }} px-3 py-1 rounded-full text-xs font-medium">
                                 {{ $product->status }}
                             </span>
                         </div>
-
                         <div>
                             <a href="{{ route('products.show', $product->id) }}" 
                                 class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">

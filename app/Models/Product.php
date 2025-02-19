@@ -1,5 +1,6 @@
 <?php
 
+// Model Product.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,44 +10,36 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name', 
-        'price', 
-        'status', 
-        'category_id', 
-        'variation_id', 
-        'image_url',
-        'description',
-        'type'
-    ];
+    protected $fillable = ['user_id', 'category_id', 'name', 'description', 'price', 'type', 'status'];
 
-    // Relasi ke kategori
+    // Relasi dengan User (Pedagang)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Relasi dengan Category
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 
-    // Relasi ke variasi
-    public function variation()
+    // Relasi dengan ProductVariation
+    public function variations()
     {
-        return $this->belongsTo(ProductVariation::class, 'variation_id');
+        return $this->hasMany(ProductVariation::class);
     }
 
-    // Relasi ke foto-foto produk
+    // Relasi dengan ProductPhoto
     public function photos()
     {
         return $this->hasMany(ProductPhoto::class);
     }
 
-    // Relasi ke foto utama
-    public function mainPhoto()
-    {
-        return $this->hasOne(ProductPhoto::class)->whereNull('variation_id');
-    }
-
-    // Relasi ke riwayat status
+    // Relasi dengan ProductStatusHistory
     public function statusHistories()
     {
         return $this->hasMany(ProductStatusHistory::class);
     }
+    
 }

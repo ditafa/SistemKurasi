@@ -18,3 +18,4 @@ use App\Http\Controllers\ProductController;
 
 Route::get('/', [ProductController::class, 'index']);
 Route::get('/detail/{id}', [ProductController::class, 'show']);
+Route::resource('products', ProductController::class);

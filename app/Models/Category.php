@@ -9,18 +9,18 @@ class Category extends Model
 {
     use HasFactory;
 
-    // Kolom yang dapat diisi (fillable)
     protected $fillable = ['name', 'parent_id'];
 
-    // Relasi ke kategori induk (self-referencing)
+    // Relasi kategori dengan kategori induk (Self-referencing)
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
-    // Relasi ke kategori anak
-    public function children()
+    // Relasi kategori dengan produk
+    public function products()
     {
-        return $this->hasMany(Category::class, 'parent_id');
+        return $this->hasMany(Product::class);
     }
 }
+
