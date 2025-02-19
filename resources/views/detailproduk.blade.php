@@ -7,15 +7,16 @@
     <link rel="icon" href="https://diskominfo.bantulkab.go.id/assets/Site/img/favicon.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="bg-blue-400 text-white py-8 px-4">
-        <div class="max-w-6xl mx-auto">
-            <p class="text-xs font-bold mb-2">LOGO</p>
-            <h1 class="text-2xl font-semibold text-center mb-1">Detail Produk</h1>
+    <header class="bg-[#678FAA] text-white py-4 px-6 w-full">
+        <div class="w-full mx-auto">
+            <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo Bantul">
+            <h1 class="text-xl font-semibold text-center mb-1">Detail Produk</h1>
             <p class="text-sm text-center text-white/90 leading-tight px-4">
-                Admin dapat melakukan kurasi produk di sini.
+                Admin dapat mengkurasi produk.
             </p>
         </div>
     </header>
@@ -34,30 +35,32 @@
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Product Images -->
-                    <div class="col-span-1">
-                        <div class="border rounded-md p-2 mb-4">
-                            <div class="relative pb-[100%]">
-                                <img src="{{ asset('storage/' . $product->image_url) }}" 
-                                     alt="{{ $product->name ?? 'Product Image' }}" 
-                                     class="absolute inset-0 w-full h-full object-contain">
-                            </div>
+                    <div class="col-span-1" x-data="{ mainImage: '{{ $product->first_photo->url }}' }">
+                    <!-- Gambar Utama Produk -->
+                    <div class="border rounded-md p-2 mb-4">
+                        <div class="relative pb-[100%]">
+                            <img :src="mainImage" 
+                                alt="{{ $product->name ?? 'Product Image' }}" 
+                                class="absolute inset-0 w-full h-full object-contain">
                         </div>
+                    </div>
 
-                        <!-- Variasi Gambar -->
-                        @if(isset($product->additional_images) && count($product->additional_images) > 0)
-                        <div class="grid grid-cols-3 gap-2">
-                            @foreach($product->additional_images as $image)
-                                <div class="border rounded-md p-1 cursor-pointer hover:border-blue-500">
-                                    <img src="{{ asset('storage/' . $image) }}" 
-                                         alt="Product thumbnail" 
-                                         class="w-full h-auto">
+                    <!-- Variasi Gambar -->
+                    <div class="grid grid-cols-4 gap-2">
+                        @if($product->photos && $product->photos->count() > 0)
+                            @foreach($product->photos as $photo)
+                                <div class="relative pb-[100%]">
+                                    <img src="{{ $photo->url }}" 
+                                        alt="{{ $product->name }}" 
+                                        @click="mainImage = '{{ $photo->url }}'"
+                                        class="absolute inset-0 w-full h-full object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-75 transition-opacity">
                                 </div>
                             @endforeach
-                        </div>
                         @else
-                            <p>Gambar variasi tidak tersedia.</p>
+                            <p class="col-span-4 text-gray-500 text-sm">Gambar variasi tidak tersedia.</p>
                         @endif
                     </div>
+                </div>
 
                     <!-- Product Info -->
                     <div class="col-span-2">
@@ -124,10 +127,149 @@
                         </div>
                         <h3 class="text-lg font-medium mb-4">Pilih Status:</h3>
                         <!-- Action Buttons (Pindah ke bawah harga) -->
-                        <div class=" mb-6 gap-2">
-                            <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Terima</button>
-                            <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Revisi</button>
-                            <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Tolak</button>
+                        <div class="mb-6" x-data="{ 
+                            showRevisionModal: false, 
+                            revisionNote: '',
+                            showConfirmModal: false,
+                            confirmationType: '',
+                            confirmationMessage: '',
+                            onConfirm: () => {}
+                        }">
+                            <!-- Confirm Modal -->
+                            <div 
+                                x-show="showConfirmModal" 
+                                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in duration-200"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0">
+                                
+                                <div 
+                                    @click.away="showConfirmModal = false"
+                                    class="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl"
+                                    x-transition:enter="transition ease-out duration-300"
+                                    x-transition:enter-start="transform scale-95 opacity-0"
+                                    x-transition:enter-end="transform scale-100 opacity-100"
+                                    x-transition:leave="transition ease-in duration-200"
+                                    x-transition:leave-start="transform scale-100 opacity-100"
+                                    x-transition:leave-end="transform scale-95 opacity-0">
+                                    
+                                    <div class="text-center">
+                                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full" 
+                                            :class="{
+                                                'bg-green-100': confirmationType === 'accept',
+                                                'bg-yellow-100': confirmationType === 'revision',
+                                                'bg-red-100': confirmationType === 'reject'
+                                            }">
+                                            <i class="fas" 
+                                            :class="{
+                                                    'fa-check text-green-600': confirmationType === 'accept',
+                                                    'fa-edit text-yellow-600': confirmationType === 'revision',
+                                                    'fa-times text-red-600': confirmationType === 'reject'
+                                            }"></i>
+                                        </div>
+                                        
+                                        <h3 class="mt-4 text-lg font-medium text-gray-900" x-text="confirmationMessage"></h3>
+                                        
+                                        <div class="mt-6 flex justify-center gap-3">
+                                            <button 
+                                                @click="showConfirmModal = false" 
+                                                class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                Tidak
+                                            </button>
+                                            <button 
+                                                @click="onConfirm(); showConfirmModal = false"
+                                                :class="{
+                                                    'bg-green-600 hover:bg-green-700': confirmationType === 'accept',
+                                                    'bg-yellow-500 hover:bg-yellow-600': confirmationType === 'revision',
+                                                    'bg-red-600 hover:bg-red-700': confirmationType === 'reject'
+                                                }"
+                                                class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                Ya
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex gap-2">
+                                <button 
+                                    @click="
+                                        confirmationType = 'accept';
+                                        confirmationMessage = 'Apakah Anda yakin ingin menerima produk ini?';
+                                        onConfirm = () => {
+                                            // Add your logic here for accepting the product
+                                            console.log('Product accepted');
+                                        };
+                                        showConfirmModal = true;
+                                    "
+                                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                    Terima
+                                </button>
+                                
+                                <button 
+                                    @click="showRevisionModal = true"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                    Diterima Dengan Revisi
+                                </button>
+                                
+                                <button 
+                                    @click="
+                                        confirmationType = 'reject';
+                                        confirmationMessage = 'Apakah Anda yakin ingin menolak produk ini?';
+                                        onConfirm = () => {
+                                            // Add your logic here for rejecting the product
+                                            console.log('Product rejected');
+                                        };
+                                        showConfirmModal = true;
+                                    "
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                    Tolak
+                                </button>
+                            </div>
+
+                            <!-- Revision Modal -->
+                            <div 
+                                x-show="showRevisionModal" 
+                                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div 
+                                    @click.away="showRevisionModal = false"
+                                    class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                                    
+                                    <h3 class="text-lg font-semibold mb-4">Catatan Revisi</h3>
+                                    
+                                    <textarea 
+                                        x-model="revisionNote"
+                                        class="w-full h-32 p-2 border rounded-md mb-4 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                        placeholder="Tulis catatan revisi di sini..."></textarea>
+                                    
+                                    <div class="flex justify-end gap-2">
+                                        <button 
+                                            @click="showRevisionModal = false" 
+                                            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 rounded-md">
+                                            Batal
+                                        </button>
+                                        <button 
+                                            @click="if(revisionNote.trim()) { 
+                                                showRevisionModal = false;
+                                                confirmationType = 'revision';
+                                                confirmationMessage = 'Apakah Anda yakin ingin mengirim revisi ini?';
+                                                onConfirm = () => {
+                                                    // Add your logic here for revision
+                                                    console.log('Revision note:', revisionNote);
+                                                    revisionNote = '';
+                                                };
+                                                showConfirmModal = true;
+                                            }"
+                                            class="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">
+                                            Simpan Revisi
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Timeline -->
@@ -153,18 +295,32 @@
                                                 Tanggal: {{ $product->created_at ? $product->created_at->format('d F Y H:i') : now()->format('d F Y H:i') }}
                                             </p>
                                         </div>
-                                        <div class="absolute -left-8 mt-1.5">
-                                            <div class="w-4 h-4 rounded-full bg-green-500 border-4 border-white"></div>
-                                        </div>
-                                        <div>
-                                            <h4 class="text-base font-semibold text-green-600">
-                                                {{ $product->status ?? 'Diajukan' }}
-                                            </h4>
-                                            <p class="text-sm text-gray-500">Status produk saat ini</p>
-                                            <p class="text-xs text-gray-400">
-                                                Tanggal: {{ $product->created_at ? $product->created_at->format('d F Y H:i') : now()->format('d F Y H:i') }}
-                                            </p>
-                                        </div>
+                                        @if ($product)
+                                            @php
+                                                // Tentukan warna berdasarkan status produk
+                                                $statusColor = match($product->formatted_status) {
+                                                    'Diterima' => 'green',
+                                                    'Ditolak' => 'red',
+                                                    'Diterima dengan Revisi' => 'yellow',
+                                                    default => 'blue'
+                                                };
+                                            @endphp
+
+                                            <div class="absolute -left-8 mt-1.5">
+                                                <div class="w-4 h-4 rounded-full bg-{{ $statusColor }}-500 border-4 border-white"></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-base font-semibold text-{{ $statusColor }}-600">
+                                                    {{ $product->formatted_status ?? 'Status Tidak Tersedia' }}
+                                                </h4>
+                                                <p class="text-sm text-gray-500">Status produk saat ini</p>
+                                                <p class="text-xs text-gray-400">
+                                                    Tanggal: {{ optional($product->created_at)->format('d F Y H:i') ?? now()->format('d F Y H:i') }}
+                                                </p>
+                                            </div>
+                                        @else
+                                            <p class="text-sm text-red-500">Produk tidak ditemukan.</p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -176,13 +332,24 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-blue-400 text-white py-3 mt-auto">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
-            <p class="text-sm font-bold">LOGO</p>
-            <div class="flex items-center gap-3">
-                <a href="#" class="text-white text-sm hover:text-blue-100"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="text-white text-sm hover:text-blue-100"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-white text-sm hover:text-blue-100"><i class="fab fa-facebook"></i></a>
+    <footer class="bg-gradient-to-r bg-[#678FAA] text-white py-4 mt-8 w-full">
+        <div class="w-full mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm font-medium">
+                © 2025 Pemkab Bantul. All rights reserved.
+            </p>
+            <div class="flex items-center gap-6">
+                <a href="https://www.instagram.com/diskominfobantul/" class="text-white hover:text-blue-100 transition-colors">
+                    <i class="fab fa-instagram text-xl"></i>
+                </a>
+                <a href="https://x.com/kominfobantul" class="text-white hover:text-blue-100 transition-colors">
+                    <i class="fab fa-twitter text-xl"></i>
+                </a>
+                <a href="https://www.facebook.com/kominfobantul/" class="text-white hover:text-blue-100 transition-colors">
+                    <i class="fab fa-facebook text-xl"></i>
+                </a>
+                <a href="https://www.youtube.com/c/BantulTV" class="text-white hover:text-blue-100 transition-colors">
+                    <i class="fab fa-youtube text-xl"></i>
+                </a>
             </div>
         </div>
     </footer>

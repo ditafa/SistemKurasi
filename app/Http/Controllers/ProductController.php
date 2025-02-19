@@ -51,7 +51,7 @@ class ProductController extends Controller
             $product->statusColor = match ($status) {
                 'Diterima' => ['bg' => 'bg-green-500', 'text' => 'text-white'],
                 'Ditolak' => ['bg' => 'bg-red-500', 'text' => 'text-white'],
-                'Revisi' => ['bg' => 'bg-yellow-500', 'text' => 'text-black'],
+                'Revisi' => ['bg' => 'bg-yellow-500', 'text' => 'text-white'],
                 default => ['bg' => 'bg-blue-500', 'text' => 'text-white'],
             };
         });

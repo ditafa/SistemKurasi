@@ -41,5 +41,24 @@ class Product extends Model
     {
         return $this->hasMany(ProductStatusHistory::class);
     }
-    
+
+    // Accessor untuk format status tampilan
+    public function getFormattedStatusAttribute()
+    {
+        $statusMapping = [
+            'diajukan' => 'Diajukan',
+            'diterima' => 'Diterima',
+            'ditolak' => 'Ditolak',
+            'revisi' => 'Diterima dengan Revisi',
+        ];
+
+        // Mengembalikan status yang diformat jika ada, jika tidak, kembalikan status aslinya
+        return $statusMapping[$this->status] ?? $this->status;
+    }
+
+     // Accessor untuk mendapatkan kategori utama
+     public function getRootCategoryAttribute()
+     {
+         return $this->category?->rootCategory ?? $this->category;
+     }
 }
