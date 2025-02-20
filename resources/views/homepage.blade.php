@@ -76,6 +76,7 @@
                 <div class="relative w-full md:w-32">
                     <select name="category" onchange="filterCategory(this)" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
+                        <option value="" disabled selected hidden>Kategori</option>
                         <option value="{{ url('/') }}">Semua</option> <!-- Kembali ke halaman utama -->
                         @foreach($categories as $category)
                             <option value="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}" 

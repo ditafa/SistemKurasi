@@ -1,6 +1,7 @@
 <?php
 
 // Model Product.php
+// Model Product.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,12 +43,6 @@ class Product extends Model
         return $this->hasMany(ProductStatusHistory::class);
     }
 
-    public function latestHistory()
-    {
-        return $this->hasOne(ProductStatusHistory::class)->latestOfMany();
-    }
-
-
     // Accessor untuk format status tampilan
     public function getFormattedStatusAttribute()
     {
@@ -58,13 +53,18 @@ class Product extends Model
             'revisi' => 'Diterima dengan Revisi',
         ];
 
-        // Mengembalikan status yang diformat jika ada, jika tidak, kembalikan status aslinya
         return $statusMapping[$this->status] ?? $this->status;
     }
 
-     // Accessor untuk mendapatkan kategori utama
-     public function getRootCategoryAttribute()
-     {
-         return $this->category?->rootCategory ?? $this->category;
-     }
+    // Accessor untuk mendapatkan kategori utama
+    public function getRootCategoryAttribute()
+    {
+        $category = $this->category;
+
+        while ($category && $category->parent) {
+            $category = $category->parent;
+        }
+
+        return $category ?: $this->category; // Jika tidak ada parent, kembalikan kategori saat ini
+    }
 }
