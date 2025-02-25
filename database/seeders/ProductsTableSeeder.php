@@ -23,8 +23,8 @@ class ProductsTableSeeder extends Seeder
                 'description' => 'Kemeja pria lengan panjang berbahan katun premium',
                 'price' => 299000.00,
                 'type' => 'variation',
-                'status' => 'diajukan',
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                
+                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
             [
@@ -34,8 +34,8 @@ class ProductsTableSeeder extends Seeder
                 'description' => 'Kemeja wanita modern dengan desain elegant',
                 'price' => 275000.00,
                 'type' => 'variation',
-                'status' => 'diterima',
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                
+                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
             [
@@ -45,8 +45,8 @@ class ProductsTableSeeder extends Seeder
                 'description' => 'Kaos dengan desain khas Jogja',
                 'price' => 125000.00,
                 'type' => 'variation',
-                'status' => 'revisi',
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                
+                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
             [
@@ -56,10 +56,22 @@ class ProductsTableSeeder extends Seeder
                 'description' => 'Sepatu lokal produksi Jogja dengan kualitas premium',
                 'price' => 450000.00,
                 'type' => 'variation',
-                'status' => 'ditolak',
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                
+                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
+            /*
+            [
+                'user_id' => 3,
+                'category_id' => 7,
+                'name' => 'Madu Asli Lokal',
+                'description' => 'Madu Lokal Asli Diambil Dari Pedalaman Hutan Yogyakarta Bantul',
+                'price' => 150000.00,
+                'type' => 'variation',
+                
+                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ],*/
         ]);
     }
 }

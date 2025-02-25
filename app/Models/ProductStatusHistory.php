@@ -11,15 +11,13 @@ class ProductStatusHistory extends Model
 
     protected $fillable = ['product_id', 'admin_id', 'status', 'notes'];
 
-    // Relasi dengan Product
     public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
+{
+    return $this->belongsTo(Product::class);
+}
 
-    // Relasi dengan User (Admin)
-    public function admin()
-    {
-        return $this->belongsTo(User::class, 'admin_id');
-    }
+public function admin()
+{
+    return $this->belongsTo(User::class, 'admin_id');
+}
 }

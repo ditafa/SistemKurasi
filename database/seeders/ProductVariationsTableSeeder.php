@@ -111,6 +111,25 @@ class ProductVariationsTableSeeder extends Seeder
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
+
+            // Makanan Madu
+            /*
+            [
+                'id' => 12,
+                'product_id' => 5,
+                'name' => 'Madu Hutan',
+                'price' => 150000.00,
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ],
+            [
+                'id' => 13,
+                'product_id' => 5,
+                'name' => 'Madu Lokal',
+                'price' => 150000.00,
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ],*/
         ]);
     }
 }

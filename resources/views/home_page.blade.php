@@ -23,18 +23,19 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col m-0">
     <!-- Header -->
-    <header class="bg-blue-400 text-white py-4 px-4 w-full">
+    <header class="bg-[#678FAA] text-white py-4 px-6 w-full">
         <div class="w-full mx-auto">
-            <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/favicon.png" alt="Logo Bantul" class="w-16 h-16 object-cover bg-gray-100 rounded-md">
-            <h1 class="text-xl font-semibold text-center mb-1">Daftar Produk</h1>
-            <p class="text-sm text-center text-white/90 leading-tight px-4">
-                Admin dapat meninjau setiap produk yang diajukan serta mencatat riwayat perubahan status secara transparan.
-            </p>
+            <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo Bantul">
+            
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="flex-grow p-4">
+    <h1 class="text-xl font-semibold text-center mb-1">Daftar Produk</h1>
+            <p class="text-sm text-center text-black/90 leading-tight px-4">
+                Admin dapat meninjau setiap produk yang diajukan serta mencatat riwayat perubahan status secara transparan.
+            </p>
         <div class="w-full mx-auto my-4">
             <!-- Search and Filter -->
             <form id="filter-form" action="{{ route('products.index') }}" method="GET" class="flex flex-col md:flex-row gap-3 mb-4 px-4">
@@ -49,32 +50,67 @@
                         <i class="fas fa-search"></i>
                     </span>
                 </div>
-                <div class="w-full md:w-32">
-                    <select name="status" onchange="filterProducts()" class="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none bg-white">
-                        <option value="">Status</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="relative w-full md:w-32">
+                <select name="status" onchange="window.location.href=this.value" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
+                    
+                    <option value="" disabled {{ !request('status') ? 'selected' : '' }} hidden>Status</option>
+                    
+                    <option value="{{ request()->url() }}" {{ request('status') === null ? 'selected' : '' }}>
+                        Semua
+                    </option>
+                    
+                    @foreach($statuses as $status)
+                        <option value="{{ request()->fullUrlWithQuery(['status' => strtolower($status)]) }}" 
+                                {{ strtolower(request('status')) === strtolower($status) ? 'selected' : '' }}>
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
+
+
+                <script>
+                    function filterProducts(select) {
+                        var selectedValue = select.value;
+                        if (selectedValue) {
+                            window.location.href = selectedValue; // Redirect ke URL yang dipilih
+                        }
+                    }
+                </script>
+                    <img src="{{ 'https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/arrow-down-icon.png' }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
                 </div>
-                <div class="w-full md:w-32">
-                    <select name="category" onchange="filterProducts()" class="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none bg-white">
-                        <option value="">Kategori</option>
+
+                <div class="relative w-full md:w-32">
+                    <select name="category" onchange="filterCategory(this)" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
+                        <option value="" disabled selected hidden>Kategori</option>
+                        <option value="{{ url('/') }}">Semua</option> <!-- Kembali ke halaman utama -->
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                            <option value="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}" 
+                                {{ request('category') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                         @endforeach
                     </select>
+                    <img src="https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/arrow-down-icon.png" 
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
                 </div>
+
+                <script>
+                    function filterCategory(select) {
+                        var selectedValue = select.value;
+                        if (selectedValue) {
+                            window.location.href = selectedValue; // Redirect ke URL filter
+                        }
+                    }
+                </script>
+
             </form>
 
             <!-- Products Table -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all hover:shadow-xl">
                 <!-- Header with border -->
-                <div class="grid grid-cols-5 py-4 px-6 text-sm font-semibold text-gray-600 border-b border-gray-100 bg-gray-50">
+                <div class="grid grid-cols-5 py-4 px-6 text-sm font-semibold text-gray-600 border-b border-gray-100 bg-gray-50 text-center">
                     <div class="pl-3">Produk</div>
                     <div>Kategori</div>
                     <div>Harga</div>
@@ -83,7 +119,7 @@
                 </div>
 
                 @foreach($products as $product)
-                    <div class="product-item grid grid-cols-5 items-center py-4 px-6 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <div class="product-item grid grid-cols-5 items-center py-4 px-6 border-b border-gray-100 hover:bg-gray-50 transition-colors text-center">
                         <div class="flex items-center gap-4">
                             @if($product->first_photo)
                                 <img src="{{ $product->first_photo->url }}" alt="{{ $product->name }}" 
@@ -91,6 +127,7 @@
                             @endif
                             <div>
                                 <p class="text-blue-600 font-medium mb-1">{{ $product->name }}</p>
+                                <p class="text-xs text-gray-500 text-left">Variasi :</p>
                                 <div class="flex flex-wrap gap-2">
                                     @if($product->category)
                                         <span class="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">
@@ -106,24 +143,37 @@
                             </div>
                         </div>
                         <div class="text-sm text-gray-600">
-                            {{ $product->category ? $product->category->name : 'Tanpa Kategori' }}
+                        <div class="text-sm text-gray-600">
+                        {{ $product->rootCategory ? $product->rootCategory->name : 'Tanpa Kategori' }}
+                    </div>
+
                         </div>
                         <div class="text-sm font-medium">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                         <div>
                             @php
-                                $statusColor = match($product->status) {
-                                    'Diterima' => ['bg' => 'green-100', 'text' => 'green-600'],
-                                    'Ditolak' => ['bg' => 'red-100', 'text' => 'red-600'],
-                                    default => ['bg' => 'yellow-100', 'text' => 'yellow-600'],
-                                };
+                                $status = ucfirst($product->latestHistory->status ?? 'Diajukan'); // Default 'pending' jika null
+                                $statusColor = [
+                                    'Diterima' => ['bg' => 'bg-green-500', 'text' => 'text-white'],
+                                    'Ditolak' => ['bg' => 'bg-red-500', 'text' => 'text-white'],
+                                    'Diterima dengan revisi' => ['bg' => 'bg-yellow-500', 'text' => 'text-white'],
+                                    'Diajukan' => ['bg' => 'bg-blue-500', 'text' => 'text-white'],
+                                ];
+                                $color = $statusColor[$status] ?? ['bg' => 'bg-gray-500', 'text' => 'text-white'];
                             @endphp
-                            <span class="bg-{{ $statusColor['bg'] }} text-{{ $statusColor['text'] }} px-3 py-1 rounded-full text-xs font-medium">
-                                {{ $product->status }}
+
+                            <span class="{{ $color['bg'] }} {{ $color['text'] }} 
+                                        inline-flex items-center justify-center 
+                                        px-3 py-1 rounded-full text-xs font-medium 
+                                        min-w-[100px] min-h-[24px] text-center">
+                                {{ $status }}
                             </span>
                         </div>
+
+
+
                         <div>
                             <a href="{{ route('products.show', $product->id) }}" 
-                                class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                class="inline-flex items-center gap-2 bg-[#678FAA] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-eye"></i>
                                 Lihat Detail
                             </a>
@@ -175,7 +225,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gradient-to-r bg-blue-400 text-white py-4 mt-8 w-full">
+    <footer class="bg-gradient-to-r bg-[#678FAA] text-white py-4 mt-8 w-full">
         <div class="w-full mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-sm font-medium">
                 © 2025 Pemkab Bantul. All rights reserved.

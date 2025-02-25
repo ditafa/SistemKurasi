@@ -29,6 +29,13 @@ class CategoriesTableSeeder extends Seeder
                 'created_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
             ],
+            /*
+            [
+                'name' => 'Makanan',
+                'parent_id' => null,
+                'created_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
+            ],*/
         ]);
 
         // Child Categories
@@ -46,11 +53,18 @@ class CategoriesTableSeeder extends Seeder
                 'updated_at' => Carbon::now()->setTime(8, 45, 0)->format('Y-m-d H:i:s'),
             ],
             [
-                'name' => 'Sepatu Casual',
+                'name' => 'Sepatu',
                 'parent_id' => 2,
                 'created_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
             ],
+            /*
+            [
+                'name' => 'Madu',
+                'parent_id' => 3,
+                'created_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
+            ],*/
         ]);
     }
 }
