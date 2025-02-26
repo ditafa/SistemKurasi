@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductStatusHistory;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -154,7 +155,22 @@ class ProductController extends Controller
     ]);
 
     try {
-        $product = Product::findOrFail($id);
+        $product = Product::with('statusHistories')->findOrFail($id);
+        
+        // Cek apakah produk sudah pernah diterima atau ditolak
+        $isProcessed = $product->statusHistories->contains(function($history) {
+            return in_array(strtolower($history->status), ['diterima', 'ditolak']);
+        });
+        
+        if ($isProcessed) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk ini sudah diproses dan tidak dapat diubah statusnya.',
+            ], 403);
+        }
+
+        // Gunakan Carbon untuk mendapatkan waktu saat ini dalam zona waktu WIB
+        $currentTime = Carbon::now('Asia/Jakarta');
 
         // Simpan status baru ke dalam product_status_histories
         $statusHistory = new ProductStatusHistory([
@@ -164,6 +180,9 @@ class ProductController extends Controller
             'notes' => $request->notes ?? '',
         ]);
 
+        // Set created_at secara eksplisit
+        $statusHistory->created_at = $currentTime;
+        
         $statusHistory->save();
 
         // Update status produk jika diperlukan
@@ -240,47 +259,39 @@ private function getTimeline($product)
     }
 }
 
-public function getVariation($productId, $variationId)
+public function getVariation($product, $variation)
 {
     try {
-        // Log input untuk debugging
-        \Log::info("getVariation called with productId: $productId, variationId: $variationId");
+        // Log input (untuk debugging)
+        \Log::info("getVariation called with product: $product, variation: $variation");
         
-        // Ambil produk tanpa relasi dulu untuk memastikan produk ada
-        $product = Product::findOrFail($productId);
-        \Log::info("Product found: " . $product->name);
+        // Ambil produk
+        $productModel = Product::findOrFail($product);
         
-        // Cek apakah variasi ada dalam database
-        $variation = $product->variations()->find($variationId);
+        // Ambil variasi
+        $variationModel = $productModel->variations()->findOrFail($variation);
         
-        if (!$variation) {
-            \Log::warning("Variation with ID $variationId not found for product $productId");
-            return response()->json([
-                'success' => false,
-                'message' => "Variasi dengan ID $variationId tidak ditemukan"
-            ], 404);
-        }
+        // Siapkan data respons
+        $response = [
+            'id' => $variationModel->id,
+            'name' => $variationModel->name,
+            'price' => $variationModel->price ?? $productModel->price,
+            // Tambahkan informasi lain yang diperlukan
+        ];
         
-        \Log::info("Variation found: " . $variation->name);
-        
-        // Response berhasil dengan data minimal
+        // Kembalikan respons sukses
         return response()->json([
             'success' => true,
-            'variation' => [
-                'id' => $variation->id,
-                'name' => $variation->name,
-                'price' => $product->price, // Gunakan harga produk sebagai default
-            ],
+            'variation' => $response
         ]);
     } catch (\Exception $e) {
-        // Log error detail
-        \Log::error('Error fetching variation: ' . $e->getMessage());
-        \Log::error($e->getTraceAsString());
+        // Log error
+        \Log::error("Error in getVariation: " . $e->getMessage());
         
-        // Response error dengan detail untuk debugging
+        // Kembalikan respons error
         return response()->json([
             'success' => false,
-            'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            'message' => "Terjadi kesalahan: " . $e->getMessage()
         ], 500);
     }
 }

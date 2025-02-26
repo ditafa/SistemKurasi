@@ -12,66 +12,66 @@ class ProductsTableSeeder extends Seeder
     {
         Carbon::setLocale('id');
         date_default_timezone_set('Asia/Jakarta');
-        
+
         DB::table('products')->truncate();
 
         DB::table('products')->insert([
             [
                 'user_id' => 2,
-                'category_id' => 3,
+                'category_id' => 4, // Kemeja
                 'name' => 'Kemeja Pria Premium',
-                'description' => 'Kemeja pria lengan panjang berbahan katun premium',
-                'price' => 299000.00,
+                'description' => 'Kemeja pria polos premium, terbuat dari bahan katun berkualitas tinggi 
+                                    yang lembut dan nyaman digunakan. Tersedia dalam berbagai ukuran 
+                                    dengan desain elegan yang cocok untuk acara formal maupun santai. 
+                                    Mudah dirawat, tidak mudah kusut, dan rapi sepanjang hari.',
+                'price' => 200000.00,
                 'type' => 'variation',
-                
-                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::now()->subDays(4),
+                'updated_at' => Carbon::now(),
             ],
             [
                 'user_id' => 2,
-                'category_id' => 3,
+                'category_id' => 4, // Kemeja
                 'name' => 'Kemeja Wanita Elegant',
-                'description' => 'Kemeja wanita modern dengan desain elegant',
-                'price' => 275000.00,
+                'description' => 'Kemeja wanita polos premium, menggunakan bahan katun berkualitas 
+                                    tinggi yang nyaman dipakai. Tersedia dalam berbagai ukuran. 
+                                    Cocok untuk acara formal maupun casual.
+                                    Perawatan mudah dan tidak mudah kusut.',
+                'price' => 150000.00,
                 'type' => 'variation',
-                
-                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::now()->subDays(4),
+                'updated_at' => Carbon::now(),
             ],
             [
                 'user_id' => 3,
-                'category_id' => 4,
+                'category_id' => 5, // Kaos
                 'name' => 'Kaos Jogja Heritage',
                 'description' => 'Kaos dengan desain khas Jogja',
-                'price' => 125000.00,
+                'price' => 50000.00,
                 'type' => 'variation',
-                
-                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::now()->subDays(4),
+                'updated_at' => Carbon::now(),
             ],
             [
                 'user_id' => 3,
-                'category_id' => 5,
+                'category_id' => 3, // Sepatu
                 'name' => 'Sepatu Jogja Handmade',
                 'description' => 'Sepatu lokal produksi Jogja dengan kualitas premium',
-                'price' => 450000.00,
+                'price' => 400000.00,
                 'type' => 'variation',
-                
-                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'created_at' => Carbon::now()->subDays(4),
+                'updated_at' => Carbon::now(),
             ],
-            /*
             [
                 'user_id' => 3,
-                'category_id' => 7,
+                'category_id' => 6, // Madu
                 'name' => 'Madu Asli Lokal',
                 'description' => 'Madu Lokal Asli Diambil Dari Pedalaman Hutan Yogyakarta Bantul',
                 'price' => 150000.00,
-                'type' => 'variation',
-                
-                'created_at' => Carbon::now()->subDays(4)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],*/
+                'type' => 'single',
+                'created_at' => Carbon::now()->subDays(4),
+                'updated_at' => Carbon::now(),
+            ],
         ]);
     }
 }

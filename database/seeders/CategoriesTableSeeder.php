@@ -12,59 +12,51 @@ class CategoriesTableSeeder extends Seeder
     {
         Carbon::setLocale('id');
         date_default_timezone_set('Asia/Jakarta');
-        
+
         DB::table('categories')->truncate();
 
-        // Parent Categories
-        DB::table('categories')->insert([
-            [
-                'name' => 'Pakaian',
-                'parent_id' => null,
-                'created_at' => Carbon::now()->setTime(8, 30, 0)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->setTime(8, 30, 0)->format('Y-m-d H:i:s'),
-            ],
-            [
-                'name' => 'Sepatu',
-                'parent_id' => null,
-                'created_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
-            ],
-            /*
-            [
-                'name' => 'Makanan',
-                'parent_id' => null,
-                'created_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->setTime(8, 35, 0)->format('Y-m-d H:i:s'),
-            ],*/
+        // Insert Parent Categories
+        $makananId = DB::table('categories')->insertGetId([
+            'name' => 'Makanan',
+            'parent_id' => null,
+            'created_at' => Carbon::now()->setTime(8, 35, 0),
+            'updated_at' => Carbon::now()->setTime(8, 35, 0),
         ]);
 
-        // Child Categories
-        DB::table('categories')->insert([
-            [
-                'name' => 'Kemeja',
-                'parent_id' => 1,
-                'created_at' => Carbon::now()->setTime(8, 40, 0)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->setTime(8, 40, 0)->format('Y-m-d H:i:s'),
-            ],
-            [
-                'name' => 'Kaos',
-                'parent_id' => 1,
-                'created_at' => Carbon::now()->setTime(8, 45, 0)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->setTime(8, 45, 0)->format('Y-m-d H:i:s'),
-            ],
-            [
-                'name' => 'Sepatu',
-                'parent_id' => 2,
-                'created_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
-            ],
-            /*
-            [
-                'name' => 'Madu',
-                'parent_id' => 3,
-                'created_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->setTime(8, 50, 0)->format('Y-m-d H:i:s'),
-            ],*/
+        $pakaianId = DB::table('categories')->insertGetId([
+            'name' => 'Pakaian',
+            'parent_id' => null,
+            'created_at' => Carbon::now()->setTime(8, 30, 0),
+            'updated_at' => Carbon::now()->setTime(8, 30, 0),
+        ]);
+
+        $sepatuId = DB::table('categories')->insertGetId([
+            'name' => 'Sepatu',
+            'parent_id' => null,
+            'created_at' => Carbon::now()->setTime(8, 35, 0),
+            'updated_at' => Carbon::now()->setTime(8, 35, 0),
+        ]);
+
+        // Insert Child Categories
+        $kemejaId = DB::table('categories')->insertGetId([
+            'name' => 'Kemeja',
+            'parent_id' => $pakaianId,
+            'created_at' => Carbon::now()->setTime(8, 40, 0),
+            'updated_at' => Carbon::now()->setTime(8, 40, 0),
+        ]);
+
+        $kaosId = DB::table('categories')->insertGetId([
+            'name' => 'Kaos',
+            'parent_id' => $pakaianId,
+            'created_at' => Carbon::now()->setTime(8, 45, 0),
+            'updated_at' => Carbon::now()->setTime(8, 45, 0),
+        ]);
+
+        $maduId = DB::table('categories')->insertGetId([
+            'name' => 'Madu',
+            'parent_id' => $makananId,
+            'created_at' => Carbon::now()->setTime(8, 50, 0),
+            'updated_at' => Carbon::now()->setTime(8, 50, 0),
         ]);
     }
 }

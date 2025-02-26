@@ -117,35 +117,38 @@
                     <div>Aksi</div>
                 </div>
 
+                <!-- Ganti bagian product-item menjadi seperti ini -->
                 @foreach($products as $product)
                     <div class="product-item grid grid-cols-5 items-center py-4 px-6 border-b border-gray-100 hover:bg-gray-50 transition-colors text-center">
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-start gap-3"> <!-- Ubah 'items-center' menjadi 'items-start' dan 'gap-4' menjadi 'gap-3' -->
                             @if($product->first_photo)
                                 <img src="{{ $product->first_photo->url }}" alt="{{ $product->name }}" 
                                     class="w-16 h-16 object-cover bg-gray-100 rounded-lg shadow-sm">
+                            @else
+                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-400 text-xl"></i>
+                                </div>
                             @endif
-                            <div>
+                            <div class="text-left"> <!-- Tambahkan class 'text-left' -->
                                 <p class="text-blue-600 font-medium mb-1">{{ $product->name }}</p>
-                                <p class="text-xs text-gray-500 text-left">Variasi :</p>
-                                <div class="flex flex-wrap gap-2">
-                                    @if($product->category)
-                                        <span class="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">
-                                            {{ $product->category->name }}
-                                        </span>
-                                    @endif
+                                <p class="text-xs text-gray-500">Variasi :</p>
+                                <div class="flex flex-wrap gap-1 mt-1"> <!-- Ubah 'gap-2' menjadi 'gap-1' dan tambahkan 'mt-1' -->
                                     @if($product->variations->isNotEmpty())
-                                        <span class="px-3 py-1 text-xs bg-purple-100 text-purple-600 rounded-full">
-                                            {{ $product->variations->first()->name }}
+                                        @foreach($product->variations as $variation)
+                                            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-600 rounded-full"> <!-- Ubah 'px-3' menjadi 'px-2' -->
+                                                {{ $variation->name }}
+                                            </span>
+                                        @endforeach
+                                    @else
+                                        <span class="px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full"> <!-- Ubah 'px-3' menjadi 'px-2' -->
+                                            Tidak Ada
                                         </span>
                                     @endif
                                 </div>
                             </div>
                         </div>
                         <div class="text-sm text-gray-600">
-                        <div class="text-sm text-gray-600">
-                        {{ $product->rootCategory ? $product->rootCategory->name : 'Tanpa Kategori' }}
-                    </div>
-
+                            {{ $product->rootCategory ? $product->rootCategory->name : 'Tanpa Kategori' }}
                         </div>
                         <div class="text-sm font-medium">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                         <div>
@@ -167,9 +170,6 @@
                                 {{ $status }}
                             </span>
                         </div>
-
-
-
                         <div>
                             <a href="{{ route('products.show', $product->id) }}" 
                                 class="inline-flex items-center gap-2 bg-[#678FAA] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">

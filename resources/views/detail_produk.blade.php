@@ -85,7 +85,10 @@
     }
 
     // Function to update status via AJAX
-    function updateStatus(status, notes = '') {
+function updateStatus(status, notes = '') {
+    // Tambahkan timestamp sekarang
+    const currentTimestamp = new Date().toISOString();
+    
     // Tampilkan loading
     Swal.fire({
         title: 'Memproses...',
@@ -104,7 +107,8 @@
         },
         body: JSON.stringify({
             status: status,
-            notes: notes
+            notes: notes,
+            timestamp: currentTimestamp // Kirim timestamp saat ini
         })
     })
     .finally(() => {
@@ -241,133 +245,239 @@
                             </div>
 
                                 <script>
-                                    // 1. Ubah kode handleVariationClick pada detail_produk.blade.php
-                                    function handleVariationClick(id, name) {
-        // Tampilkan loading
-        Swal.fire({
-            title: 'Memuat Variasi...',
-            text: `Mengambil data untuk variasi "${name}"`,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
+                                   function handleVariationClick(id, name) {
+                                    // Tandai tombol variasi yang aktif
+                                    const variationButtons = document.querySelectorAll('button[data-variation-id]');
+                                    variationButtons.forEach(button => {
+                                        if (button.getAttribute('data-variation-id') === id) {
+                                            button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                                            button.classList.add('bg-blue-700', 'hover:bg-blue-800', 'ring-2', 'ring-blue-300');
+                                        } else {
+                                            button.classList.remove('bg-blue-700', 'hover:bg-blue-800', 'ring-2', 'ring-blue-300');
+                                            button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                                        }
+                                    });
 
-        // Kirim permintaan AJAX ke endpoint baru - perhatikan URL yang disesuaikan
-        fetch(`/detail/{{ $product->id }}/variation/${id}`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update konten halaman dengan data variasi
-                updateProductDetails(data.variation);
-                
-                // Tampilkan pesan sukses
-                Swal.fire({
-                    title: 'Variasi Dipilih!',
-                    text: `Menampilkan variasi "${name}"`,
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            } else {
-                throw new Error(data.message || 'Terjadi kesalahan saat mengambil data variasi');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                title: 'Gagal!',
-                text: error.message || 'Terjadi kesalahan saat mengambil data variasi',
-                icon: 'error',
-                confirmButtonText: 'Tutup'
-            });
-        });
-    }
+                                    // Tampilkan loading
+                                    
 
-    // Fungsi untuk memperbarui konten halaman
-    function updateProductDetails(variation) {
-        // Update harga
-        const priceElement = document.querySelector('.text-2xl.font-bold.text-blue-600');
-        if (priceElement && variation.price) {
-            priceElement.textContent = `Rp ${formatNumber(variation.price)}`;
-        }
+                                    // Kirim permintaan AJAX ke endpoint variasi
+                                    fetch(`/detail/{{ $product->id }}/variation/${id}`, {
+                                        method: 'GET',
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'Accept': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Terjadi kesalahan saat mengambil data variasi');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        console.log("Data variasi diterima:", data); // Tambahkan log untuk debugging
+                                        
+                                        if (data.success) {
+                                            // Update konten halaman dengan data variasi
+                                            updateProductDetails(data.variation);
+                                            
+                                            // Tampilkan pesan sukses
+                                            
+                                        } else {
+                                            throw new Error(data.message || 'Terjadi kesalahan saat mengambil data variasi');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        Swal.fire({
+                                            title: 'Gagal!',
+                                            text: error.message || 'Terjadi kesalahan saat mengambil data variasi',
+                                            icon: 'error',
+                                            confirmButtonText: 'Tutup'
+                                        });
+                                    });
+                                }
 
-        // Update gambar jika ada
-        if (variation.photos && variation.photos.length > 0) {
-            // Perbarui variabel images dalam Alpine.js
-            const productImagesDiv = document.querySelector('[x-data]');
-            if (productImagesDiv) {
-                // Cara untuk mereset Alpine data - ini rumit karena Alpine.js tidak mudah diakses dari luar
-                // Mencoba update gambar melalui DOM secara langsung
-                window.dispatchEvent(new CustomEvent('alpine:update-images', {
-                    detail: {
-                        images: variation.photos.map(photo => photo.url)
-                    }
-                }));
-            }
+                                function updateProductDetails(variation) {
+                                    console.log("Updating product details with:", variation); // Tambahkan log untuk debugging
+                                    
+                                    // Update harga jika ada
+                                    if (variation.price !== undefined && variation.price !== null) {
+                                        const priceElement = document.querySelector('.text-2xl.font-bold.text-blue-600');
+                                        if (priceElement) {
+                                            priceElement.textContent = `Rp ${formatNumber(variation.price)}`;
+                                        }
+                                    }
 
-            // Cara alternatif jika Alpine.js tidak bisa diakses langsung
-            // Perbarui gambar utama
-            const mainImage = document.querySelector('.object-contain');
-            if (mainImage) {
-                mainImage.src = variation.photos[0].url;
-            }
-        }
+                                    // Update deskripsi jika ada
+                                    if (variation.description) {
+                                        const descriptionElement = document.querySelector('.text-sm.text-gray-700.mb-6');
+                                        if (descriptionElement) {
+                                            descriptionElement.textContent = variation.description;
+                                        }
+                                    }
 
-        // Update detail variasi lainnya sesuai kebutuhan
-        // Misalnya warna, ukuran, dll
-        if (variation.colors && Array.isArray(variation.colors)) {
-            const colorsContainer = document.querySelector('.flex.gap-2.mb-4');
-            if (colorsContainer) {
-                colorsContainer.innerHTML = '';
-                variation.colors.forEach((color, index) => {
-                    const isActive = index === 0;
-                    const colorSpan = document.createElement('span');
-                    colorSpan.className = `border px-3 py-1 rounded-full text-xs ${isActive ? 'bg-blue-100 border-blue-500 text-blue-500' : ''}`;
-                    colorSpan.textContent = color;
-                    colorsContainer.appendChild(colorSpan);
-                });
-            }
-        }
+                                    // Update gambar jika ada
+                                    if (variation.photos && variation.photos.length > 0) {
+                                        console.log("Updating images with:", variation.photos); // Log foto untuk debugging
+                                        
+                                        // Update gambar utama
+                                        const mainImage = document.querySelector('.w-full.h-full.object-contain');
+                                        if (mainImage) {
+                                            mainImage.src = variation.photos[0].url;
+                                        }
+                                        
+                                        // Update tampilan Alpine.js
+                                        const productImagesDiv = document.querySelector('[x-data]');
+                                        if (productImagesDiv && window.Alpine) {
+                                            try {
+                                                // Dapatkan instance Alpine.js
+                                                const alpineData = window.Alpine.$data(productImagesDiv);
+                                                
+                                                // Reset index dan update array gambar
+                                                if (alpineData) {
+                                                    alpineData.currentImageIndex = 0;
+                                                    alpineData.images = variation.photos.map(photo => photo.url);
+                                                    console.log("Alpine data updated with:", alpineData.images);
+                                                }
+                                            } catch (e) {
+                                                console.error("Error updating Alpine data:", e);
+                                            }
+                                        }
+                                        
+                                        // Update thumbnail gambar
+                                        const thumbnailContainer = document.querySelector('.grid.grid-cols-4.gap-2');
+                                        if (thumbnailContainer && variation.photos.length > 0) {
+                                            // Bersihkan thumbnail yang ada
+                                            thumbnailContainer.innerHTML = '';
+                                            
+                                            // Buat thumbnail baru
+                                            variation.photos.forEach((photo, index) => {
+                                                const thumbDiv = document.createElement('div');
+                                                thumbDiv.className = 'relative pb-[100%]';
+                                                
+                                                const img = document.createElement('img');
+                                                img.src = photo.url;
+                                                img.alt = variation.name || 'Product Variation';
+                                                img.className = `absolute inset-0 w-full h-full object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-75 transition-opacity ${index === 0 ? 'ring-2 ring-blue-500' : ''}`;
+                                                
+                                                // Tambahkan onclick handler untuk thumbnail
+                                                img.onclick = function() {
+                                                    // Update gambar utama
+                                                    const mainImg = document.querySelector('.w-full.h-full.object-contain');
+                                                    if (mainImg) {
+                                                        mainImg.src = photo.url;
+                                                    }
+                                                    
+                                                    // Update index di Alpine.js jika tersedia
+                                                    if (productImagesDiv && window.Alpine) {
+                                                        try {
+                                                            const alpineData = window.Alpine.$data(productImagesDiv);
+                                                            if (alpineData) {
+                                                                alpineData.currentImageIndex = index;
+                                                            }
+                                                        } catch (e) {
+                                                            console.error("Error updating Alpine index:", e);
+                                                        }
+                                                    }
+                                                    
+                                                    // Update highlight pada thumbnail
+                                                    thumbnailContainer.querySelectorAll('img').forEach((thumb, i) => {
+                                                        if (i === index) {
+                                                            thumb.classList.add('ring-2', 'ring-blue-500');
+                                                        } else {
+                                                            thumb.classList.remove('ring-2', 'ring-blue-500');
+                                                        }
+                                                    });
+                                                };
+                                                
+                                                thumbDiv.appendChild(img);
+                                                thumbnailContainer.appendChild(thumbDiv);
+                                            });
+                                        }
+                                    }
 
-        if (variation.sizes && Array.isArray(variation.sizes)) {
-            const sizesContainer = document.querySelector('.flex.gap-2');
-            if (sizesContainer) {
-                sizesContainer.innerHTML = '';
-                variation.sizes.forEach((size, index) => {
-                    const isActive = index === 0;
-                    const sizeSpan = document.createElement('span');
-                    sizeSpan.className = `border w-8 h-8 flex items-center justify-center rounded-full text-xs ${isActive ? 'bg-blue-100 border-blue-500 text-blue-500' : ''}`;
-                    sizeSpan.textContent = size;
-                    sizesContainer.appendChild(sizeSpan);
-                });
-            }
-        }
+                                // Update warna jika ada
+                                if (variation.colors && Array.isArray(variation.colors)) {
+                                    const colorsContainer = document.querySelector('.flex.gap-2.mb-4');
+                                    if (colorsContainer) {
+                                        colorsContainer.innerHTML = '';
+                                        variation.colors.forEach((color, index) => {
+                                            const isActive = index === 0;
+                                            const colorSpan = document.createElement('span');
+                                            colorSpan.className = `border px-3 py-1 rounded-full text-xs ${isActive ? 'bg-blue-100 border-blue-500 text-blue-500' : ''}`;
+                                            colorSpan.textContent = color;
+                                            
+                                            // Tambahkan event click untuk memilih warna
+                                            colorSpan.addEventListener('click', function() {
+                                                // Update highlight
+                                                colorsContainer.querySelectorAll('span').forEach(span => {
+                                                    span.classList.remove('bg-blue-100', 'border-blue-500', 'text-blue-500');
+                                                });
+                                                this.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-500');
+                                            });
+                                            
+                                            colorsContainer.appendChild(colorSpan);
+                                        });
+                                    }
+                                }
 
-        // Highlight tombol variasi yang dipilih
-        const variationButtons = document.querySelectorAll('button[data-variation-id]');
-        variationButtons.forEach(button => {
-            const buttonId = button.getAttribute('data-variation-id');
-            if (buttonId === variation.id.toString()) {
-                button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                button.classList.add('bg-blue-700', 'hover:bg-blue-800', 'ring-2', 'ring-blue-300');
-            } else {
-                button.classList.remove('bg-blue-700', 'hover:bg-blue-800', 'ring-2', 'ring-blue-300');
-                button.classList.add('bg-blue-500', 'hover:bg-blue-600');
-            }
-        });
-    }
+                                // Update ukuran jika ada
+                                if (variation.sizes && Array.isArray(variation.sizes)) {
+                                    const sizesContainer = document.querySelector('.flex.gap-2:not(.mb-4)'); // Untuk membedakan dari container warna
+                                    if (sizesContainer) {
+                                        sizesContainer.innerHTML = '';
+                                        variation.sizes.forEach((size, index) => {
+                                            const isActive = index === 0;
+                                            const sizeSpan = document.createElement('span');
+                                            sizeSpan.className = `border w-8 h-8 flex items-center justify-center rounded-full text-xs ${isActive ? 'bg-blue-100 border-blue-500 text-blue-500' : ''}`;
+                                            sizeSpan.textContent = size;
+                                            
+                                            // Tambahkan event click untuk memilih ukuran
+                                            sizeSpan.addEventListener('click', function() {
+                                                // Update highlight
+                                                sizesContainer.querySelectorAll('span').forEach(span => {
+                                                    span.classList.remove('bg-blue-100', 'border-blue-500', 'text-blue-500');
+                                                });
+                                                this.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-500');
+                                            });
+                                            
+                                            sizesContainer.appendChild(sizeSpan);
+                                        });
+                                    }
+                                }
+                            }
 
-    // Fungsi pembantu untuk format angka
-    function formatNumber(number) {
-        return new Intl.NumberFormat('id-ID').format(number);
-    }
+                            // Fungsi pembantu untuk format angka
+                            function formatNumber(number) {
+                                return new Intl.NumberFormat('id-ID').format(number);
+                            }
+                            // Menambahkan fungsi untuk dijalankan saat halaman dimuat
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Cari tombol variasi pertama
+                                const firstVariationButton = document.querySelector('.variations-container button[data-variation-id]');
+                                
+                                // Jika ada tombol variasi
+                                if (firstVariationButton) {
+                                    // Dapatkan ID dan nama variasi
+                                    const variationId = firstVariationButton.getAttribute('data-variation-id');
+                                    const variationName = firstVariationButton.textContent.trim();
+                                    
+                                    // Aktifkan variasi pertama
+                                    console.log('Mengaktifkan variasi pertama:', variationName);
+                                    
+                                    // Ubah tampilan tombol untuk menandakan aktif
+                                    firstVariationButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                                    firstVariationButton.classList.add('bg-blue-700', 'hover:bg-blue-800', 'ring-2', 'ring-blue-300');
+                                    
+                                    // Panggil fungsi untuk mengambil data variasi
+                                    handleVariationClick(variationId, variationName);
+                                }
+                            });
+
+                            
                                 </script>
 
                             </div>
@@ -406,74 +516,115 @@
                                 Rp {{ number_format($product->price ?? 0, 0, ',', '.') }}
                             </h2>
                         </div>
-                        <h3 class="text-lg font-medium mb-4">Pilih Status:</h3>
                         <!-- Action Buttons with SweetAlert2 -->
-                        <div class="flex justify-start mb-6 gap-2">
-                            <!-- Terima Button -->
-                            <button 
-                                onclick="confirmAccept()"
-                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                                Terima
-                            </button>
+                        @php
+                            $isProcessed = false;
+                            $statusProcessed = '';
+                            
+                            // Cek apakah produk sudah pernah diterima atau ditolak
+                            foreach($timeline as $item) {
+                                if(strtolower($item['status']) === 'diterima' || strtolower($item['status']) === 'ditolak') {
+                                    $isProcessed = true;
+                                    $statusProcessed = $item['status'];
+                                    break;
+                                }
+                            }
+                        @endphp
 
-                            <!-- Diterima Dengan Revisi Button -->
-                            <button 
-                                onclick="revisionWithNote()"
-                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                                Diterima Dengan Revisi
-                            </button>
+                        @if(!$isProcessed)
+                            <h3 class="text-lg font-medium mb-4">Pilih Status:</h3>
+                            <div class="flex justify-start mb-6 gap-2">
+                                <!-- Terima Button -->
+                                <button 
+                                    onclick="confirmAccept()"
+                                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                    Terima
+                                </button>
 
-                            <!-- Tolak Button -->
-                            <button 
-                                onclick="confirmReject()"
-                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                                Tolak
-                            </button>
-                        </div>
+                                <!-- Diterima Dengan Revisi Button -->
+                                <button 
+                                    onclick="revisionWithNote()"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                    Diterima Dengan Revisi
+                                </button>
+
+                                <!-- Tolak Button -->
+                                <button 
+                                    onclick="confirmReject()"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                    Tolak
+                                </button>
+                            </div>
+                        @else
+                            <div class="p-4 rounded-md mb-6 
+                            @if(strtolower($statusProcessed) === 'diterima')
+                                bg-green-100
+                            @elseif(strtolower($statusProcessed) === 'ditolak')
+                                bg-red-100
+                            @else
+                                bg-gray-100
+                            @endif">
+                                <p class="
+                                @if(strtolower($statusProcessed) === 'diterima')
+                                    text-green-700
+                                @elseif(strtolower($statusProcessed) === 'ditolak')
+                                    text-red-700
+                                @else
+                                    text-gray-700
+                                @endif font-medium">
+                                    Produk ini sudah {{ $statusProcessed }} dan tidak dapat diubah statusnya.
+                                </p>
+                            </div>
+                        @endif
 
                         <!-- Timeline -->
                         <!-- Timeline -->
             <!-- In detailproduk.blade.php, replace the existing Timeline section with: -->
                 <!-- Timeline -->
-                            <div>
-                                <h3 class="text-lg font-medium mb-4">Timeline Status:</h3>
-                                <div class="relative">
-                                    <div class="absolute h-full w-px bg-gray-300 left-4"></div>
-                                    <div class="ml-8 space-y-8">
-                                        @foreach($timeline as $item)
-                                        <div class="relative">
-                                            <div class="absolute -left-8 mt-1.5">
-                                                <div class="w-4 h-4 rounded-full border-4 border-white"
-                                                    @class([
-                                                        'bg-blue-500' => $item['color'] === 'blue',
-                                                        'bg-green-500' => $item['color'] === 'green',
-                                                        'bg-red-500' => $item['color'] === 'red',
-                                                        'bg-yellow-500' => $item['color'] === 'yellow',
-                                                        'bg-gray-500' => $item['color'] === 'gray',
-                                                    ])></div>
-                                            </div>
-                                            <div>
-                                                <h4 @class([
-                                                    'text-base font-semibold',
-                                                    'text-blue-600' => $item['color'] === 'blue',
-                                                    'text-green-600' => $item['color'] === 'green',
-                                                    'text-red-600' => $item['color'] === 'red',
-                                                    'text-yellow-600' => $item['color'] === 'yellow',
-                                                    'text-gray-600' => $item['color'] === 'gray',
-                                                ])>{{ $item['status'] }}</h4>
-                                                <p class="text-sm text-gray-500">{{ 'Catatan :' }}</p>
-                                                <p class="text-sm text-gray-500">{{ $item['notes'] }}</p>
-                                                <div class="flex items-center gap-2 text-xs text-gray-400">
-                                                    <span>Oleh: {{ $item['admin'] }}</span>
-                                                    <span>•</span>
-                                                    <span>{{ $item['created_at']->format('d F Y H:i') }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endforeach
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Timeline Status:</h3>
+                    <div class="relative">
+                        <div class="absolute h-full w-px bg-gray-300 left-4"></div>
+                        <div class="ml-8 space-y-8">
+                            @foreach($timeline as $item)
+                            <div class="relative">
+                                <div class="absolute -left-8 mt-1.5">
+                                    <div class="w-4 h-4 rounded-full border-4 border-white"
+                                        @class([
+                                            'bg-blue-500' => $item['color'] === 'blue',
+                                            'bg-green-500' => $item['color'] === 'green',
+                                            'bg-red-500' => $item['color'] === 'red',
+                                            'bg-yellow-500' => $item['color'] === 'yellow',
+                                            'bg-gray-500' => $item['color'] === 'gray',
+                                        ])></div>
+                                </div>
+                                <div>
+                                    <h4 @class([
+                                        'text-base font-semibold',
+                                        'text-blue-600' => $item['color'] === 'blue',
+                                        'text-green-600' => $item['color'] === 'green',
+                                        'text-red-600' => $item['color'] === 'red',
+                                        'text-yellow-600' => $item['color'] === 'yellow',
+                                        'text-gray-600' => $item['color'] === 'gray',
+                                    ])>{{ $item['status'] }}</h4>
+                                    
+                                    @if(isset($item['notes']) && !empty($item['notes']) && $item['notes'] !== 'Tidak ada catatan')
+                                        <p class="text-sm text-gray-500">Catatan:</p>
+                                        <p class="text-sm text-gray-500">{{ $item['notes'] }}</p>
+                                    @endif
+                                    
+                                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                                        <span>Oleh: {{ $item['admin'] }}</span>
+                                        <span>•</span>
+                                        <span>{{ $item['created_at']->format('d F Y H:i') }}</span>
+                                        <span>WIB</span>
                                     </div>
                                 </div>
                             </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
                         </div>
                     </div>
                 </div>

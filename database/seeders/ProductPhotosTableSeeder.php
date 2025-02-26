@@ -91,19 +91,13 @@ class ProductPhotosTableSeeder extends Seeder
            ],
 
            // Foto Madu
-           /*
+           
            [
             'product_id' => 5,
-            'variation_id' => 12, // Madu Hutan
+            'variation_id' => null, // Madu Hutan
             'url' => 'https://down-id.img.susercontent.com/file/4eaa26a538c5e6dac1dc3d836b52ea9e',
             'created_at' => Carbon::now()->subDays(7)->setTime(11, 27, 0)->format('Y-m-d H:i:s'),
             ],
-            [
-            'product_id' => 5,
-            'variation_id' => 13, // Madu Lokal
-            'url' => 'https://down-id.img.susercontent.com/file/id-11134207-7qukx-lhpp9uup8c5b0f',
-            'created_at' => Carbon::now()->subDays(7)->setTime(11, 27, 0)->format('Y-m-d H:i:s'),
-            ],*/
        ]);
    }
 }
