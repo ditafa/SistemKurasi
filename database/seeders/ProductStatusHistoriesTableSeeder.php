@@ -20,7 +20,7 @@ class ProductStatusHistoriesTableSeeder extends Seeder
             
             
             // Riwayat untuk Kemeja Wanita Elegant
-           
+           /*
             [
                 'product_id' => 2,
                 'admin_id' => 1, // ID admin yang memverifikasi
@@ -61,7 +61,7 @@ class ProductStatusHistoriesTableSeeder extends Seeder
             ],
 
             // Riwayat Madu
-            /*
+            
 
             [
                 'product_id' => 5,

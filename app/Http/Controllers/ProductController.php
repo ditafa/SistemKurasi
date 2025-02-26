@@ -145,4 +145,143 @@ class ProductController extends Controller
 
         return view('detail_produk', compact('product', 'timeline'));
     }
+
+    public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|string',
+        'notes' => 'nullable|string',
+    ]);
+
+    try {
+        $product = Product::findOrFail($id);
+
+        // Simpan status baru ke dalam product_status_histories
+        $statusHistory = new ProductStatusHistory([
+            'product_id' => $product->id,
+            'admin_id' => 1, // Ganti dengan auth()->id() jika menggunakan authentication
+            'status' => $request->status,
+            'notes' => $request->notes ?? '',
+        ]);
+
+        $statusHistory->save();
+
+        // Update status produk jika diperlukan
+        $product->status = $request->status;
+        $product->save();
+
+        // Load ulang relasi
+        $product->load(['statusHistories.admin']);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Status produk berhasil diperbarui.',
+            'timeline' => $this->getTimeline($product),
+        ]);
+    } catch (\Exception $e) {
+        // Log error untuk debugging
+        \Log::error('Error updating product status: ' . $e->getMessage());
+        \Log::error($e->getTraceAsString());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan saat memperbarui status.',
+        ], 500);
+    }
+}
+
+private function getTimeline($product)
+{
+    try {
+        $timeline = collect([
+            [
+                'status' => 'Diajukan',
+                'notes' => 'Produk baru diajukan',
+                'admin' => $product->user ? $product->user->name : 'System',
+                'created_at' => $product->created_at,
+                'color' => 'blue'
+            ]
+        ]);
+
+        // Pastikan statusHistories sudah di-load
+        if (!$product->relationLoaded('statusHistories')) {
+            $product->load('statusHistories.admin');
+        }
+
+        // Tambahkan history status ke timeline
+        $timeline = $timeline->concat($product->statusHistories->map(function($history) {
+            $colors = [
+                'diajukan' => 'blue',
+                'diterima' => 'green',
+                'ditolak' => 'red',
+                'diterima dengan revisi' => 'yellow'
+            ];
+
+            // Standardisasi status untuk display
+            $status = match(strtolower($history->status)) {
+                'diterima dengan revisi' => 'Diterima Dengan Revisi',
+                default => ucfirst(strtolower($history->status))
+            };
+
+            return [
+                'status' => $status,
+                'notes' => $history->notes ?? 'Tidak ada catatan',
+                'admin' => $history->admin ? $history->admin->name : 'System',
+                'created_at' => $history->created_at,
+                'color' => $colors[strtolower($history->status)] ?? 'gray'
+            ];
+        }));
+
+        return $timeline->sortBy('created_at')->values();
+    } catch (\Exception $e) {
+        \Log::error('Error generating timeline: ' . $e->getMessage());
+        // Return empty timeline in case of error
+        return collect([]);
+    }
+}
+
+public function getVariation($productId, $variationId)
+{
+    try {
+        // Log input untuk debugging
+        \Log::info("getVariation called with productId: $productId, variationId: $variationId");
+        
+        // Ambil produk tanpa relasi dulu untuk memastikan produk ada
+        $product = Product::findOrFail($productId);
+        \Log::info("Product found: " . $product->name);
+        
+        // Cek apakah variasi ada dalam database
+        $variation = $product->variations()->find($variationId);
+        
+        if (!$variation) {
+            \Log::warning("Variation with ID $variationId not found for product $productId");
+            return response()->json([
+                'success' => false,
+                'message' => "Variasi dengan ID $variationId tidak ditemukan"
+            ], 404);
+        }
+        
+        \Log::info("Variation found: " . $variation->name);
+        
+        // Response berhasil dengan data minimal
+        return response()->json([
+            'success' => true,
+            'variation' => [
+                'id' => $variation->id,
+                'name' => $variation->name,
+                'price' => $product->price, // Gunakan harga produk sebagai default
+            ],
+        ]);
+    } catch (\Exception $e) {
+        // Log error detail
+        \Log::error('Error fetching variation: ' . $e->getMessage());
+        \Log::error($e->getTraceAsString());
+        
+        // Response error dengan detail untuk debugging
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+        ], 500);
+    }
+}
 }

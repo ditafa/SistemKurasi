@@ -25,12 +25,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Add your logic here for accepting the product
-                Swal.fire(
-                    'Berhasil!',
-                    'Produk telah diterima.',
-                    'success'
-                );
+                updateStatus('diterima');
             }
         });
     }
@@ -66,13 +61,7 @@
             });
 
             if (result.isConfirmed) {
-                // Add your logic here for handling the revision
-                // For example: await sendRevision(revisionText);
-                Swal.fire(
-                    'Berhasil!',
-                    'Catatan revisi telah dikirim.',
-                    'success'
-                );
+                updateStatus('diterima dengan revisi', revisionText);
             }
         }
     }
@@ -90,15 +79,51 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Add your logic here for rejecting the product
-                Swal.fire(
-                    'Produk Ditolak',
-                    'Produk telah berhasil ditolak.',
-                    'success'
-                );
+                updateStatus('ditolak');
             }
         });
     }
+
+    // Function to update status via AJAX
+    function updateStatus(status, notes = '') {
+    // Tampilkan loading
+    Swal.fire({
+        title: 'Memproses...',
+        text: 'Sedang memperbarui status produk',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(`/products/{{ $product->id }}/status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            status: status,
+            notes: notes
+        })
+    })
+    .finally(() => {
+        // Apapun hasilnya (berhasil atau error), cukup reload halaman
+        // Kita tahu data berhasil tersimpan meskipun ada error di respons
+        setTimeout(() => {
+            Swal.fire({
+                title: 'Selesai!',
+                text: 'Halaman akan dimuat ulang untuk melihat perubahan',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.reload();
+            });
+        }, 500);
+    });
+}
+
 </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -196,20 +221,155 @@
                                 {{ $product->description ?? 'Deskripsi produk belum tersedia.' }}
                             </p>
                             <div>
-                                <p class="text-sm text-gray-600 mb-1">
-                                    <span class="font-medium">Variasi Produk:</span>
-                                </p>
-                                <div class="space-x-2">
-                                    @forelse ($product->variations as $variation)
-                                        <span class="inline-block bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-                                            {{ $variation->name }}
-                                        </span>
-                                    @empty
-                                        <span class="inline-block bg-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">
-                                            Tidak ada variasi
-                                        </span>
-                                    @endforelse
-                                </div>
+                            <p class="text-sm text-gray-600 mb-1">
+                                <span class="font-medium">Variasi Produk:</span>
+                            </p>
+                            <div class="space-x-2 variations-container">
+                                @forelse ($product->variations as $variation)
+                                    <button 
+                                        data-variation-id="{{ $variation->id }}"
+                                        class="inline-block bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full hover:bg-blue-600 focus:ring focus:ring-blue-300"
+                                        onclick="handleVariationClick('{{ $variation->id }}', '{{ $variation->name }}')"
+                                    >
+                                        {{ $variation->name }}
+                                    </button>
+                                @empty
+                                    <span class="inline-block bg-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">
+                                        Tidak ada variasi
+                                    </span>
+                                @endforelse
+                            </div>
+
+                                <script>
+                                    // 1. Ubah kode handleVariationClick pada detail_produk.blade.php
+                                    function handleVariationClick(id, name) {
+        // Tampilkan loading
+        Swal.fire({
+            title: 'Memuat Variasi...',
+            text: `Mengambil data untuk variasi "${name}"`,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Kirim permintaan AJAX ke endpoint baru - perhatikan URL yang disesuaikan
+        fetch(`/detail/{{ $product->id }}/variation/${id}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update konten halaman dengan data variasi
+                updateProductDetails(data.variation);
+                
+                // Tampilkan pesan sukses
+                Swal.fire({
+                    title: 'Variasi Dipilih!',
+                    text: `Menampilkan variasi "${name}"`,
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(data.message || 'Terjadi kesalahan saat mengambil data variasi');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Gagal!',
+                text: error.message || 'Terjadi kesalahan saat mengambil data variasi',
+                icon: 'error',
+                confirmButtonText: 'Tutup'
+            });
+        });
+    }
+
+    // Fungsi untuk memperbarui konten halaman
+    function updateProductDetails(variation) {
+        // Update harga
+        const priceElement = document.querySelector('.text-2xl.font-bold.text-blue-600');
+        if (priceElement && variation.price) {
+            priceElement.textContent = `Rp ${formatNumber(variation.price)}`;
+        }
+
+        // Update gambar jika ada
+        if (variation.photos && variation.photos.length > 0) {
+            // Perbarui variabel images dalam Alpine.js
+            const productImagesDiv = document.querySelector('[x-data]');
+            if (productImagesDiv) {
+                // Cara untuk mereset Alpine data - ini rumit karena Alpine.js tidak mudah diakses dari luar
+                // Mencoba update gambar melalui DOM secara langsung
+                window.dispatchEvent(new CustomEvent('alpine:update-images', {
+                    detail: {
+                        images: variation.photos.map(photo => photo.url)
+                    }
+                }));
+            }
+
+            // Cara alternatif jika Alpine.js tidak bisa diakses langsung
+            // Perbarui gambar utama
+            const mainImage = document.querySelector('.object-contain');
+            if (mainImage) {
+                mainImage.src = variation.photos[0].url;
+            }
+        }
+
+        // Update detail variasi lainnya sesuai kebutuhan
+        // Misalnya warna, ukuran, dll
+        if (variation.colors && Array.isArray(variation.colors)) {
+            const colorsContainer = document.querySelector('.flex.gap-2.mb-4');
+            if (colorsContainer) {
+                colorsContainer.innerHTML = '';
+                variation.colors.forEach((color, index) => {
+                    const isActive = index === 0;
+                    const colorSpan = document.createElement('span');
+                    colorSpan.className = `border px-3 py-1 rounded-full text-xs ${isActive ? 'bg-blue-100 border-blue-500 text-blue-500' : ''}`;
+                    colorSpan.textContent = color;
+                    colorsContainer.appendChild(colorSpan);
+                });
+            }
+        }
+
+        if (variation.sizes && Array.isArray(variation.sizes)) {
+            const sizesContainer = document.querySelector('.flex.gap-2');
+            if (sizesContainer) {
+                sizesContainer.innerHTML = '';
+                variation.sizes.forEach((size, index) => {
+                    const isActive = index === 0;
+                    const sizeSpan = document.createElement('span');
+                    sizeSpan.className = `border w-8 h-8 flex items-center justify-center rounded-full text-xs ${isActive ? 'bg-blue-100 border-blue-500 text-blue-500' : ''}`;
+                    sizeSpan.textContent = size;
+                    sizesContainer.appendChild(sizeSpan);
+                });
+            }
+        }
+
+        // Highlight tombol variasi yang dipilih
+        const variationButtons = document.querySelectorAll('button[data-variation-id]');
+        variationButtons.forEach(button => {
+            const buttonId = button.getAttribute('data-variation-id');
+            if (buttonId === variation.id.toString()) {
+                button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                button.classList.add('bg-blue-700', 'hover:bg-blue-800', 'ring-2', 'ring-blue-300');
+            } else {
+                button.classList.remove('bg-blue-700', 'hover:bg-blue-800', 'ring-2', 'ring-blue-300');
+                button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+            }
+        });
+    }
+
+    // Fungsi pembantu untuk format angka
+    function formatNumber(number) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    }
+                                </script>
+
                             </div>
                         </div>
 

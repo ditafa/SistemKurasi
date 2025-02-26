@@ -1,7 +1,5 @@
 <?php
 
-// Model Product.php
-// Model Product.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -43,14 +41,12 @@ class Product extends Model
         return $this->hasMany(ProductStatusHistory::class);
     }
 
+    // Perbaikan: hanya satu metode untuk latest history
     public function latestHistory()
-{
-    return $this->hasOne(ProductStatusHistory::class, 'product_id')->latest();
-    return $this->hasOne(ProductStatusHistory::class)->latestOfMany();
-}
-
-
-
+    {
+        return $this->hasOne(ProductStatusHistory::class, 'product_id')->latest();
+        // Hapus baris return kedua yang tidak akan pernah dieksekusi
+    }
 
     // Accessor untuk format status tampilan
     public function getFormattedStatusAttribute()

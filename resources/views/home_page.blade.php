@@ -77,7 +77,7 @@
                         }
                     }
                 </script>
-                    <img src="{{ 'https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/arrow-down-icon.png' }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
+                    <img src="{{ asset('images/down-arrow.png') }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
                 </div>
 
                 <div class="relative w-full md:w-32">
@@ -92,8 +92,7 @@
                             </option>
                         @endforeach
                     </select>
-                    <img src="https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/arrow-down-icon.png" 
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
+                    <img src="{{ asset('images/down-arrow.png') }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
                 </div>
 
                 <script>

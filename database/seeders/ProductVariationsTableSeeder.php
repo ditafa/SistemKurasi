@@ -55,7 +55,7 @@ class ProductVariationsTableSeeder extends Seeder
                 'id' => 5,
                 'product_id' => 2,
                 'name' => 'Size L',
-                'price' => 275000.00,
+                'price' => 205000.00,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
