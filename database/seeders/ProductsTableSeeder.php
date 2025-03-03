@@ -15,10 +15,17 @@ class ProductsTableSeeder extends Seeder
 
         DB::table('products')->truncate();
 
+        // Ambil ID kategori berdasarkan nama untuk memastikan konsistensi
+        $kemejaId = DB::table('categories')->where('name', 'Kemeja')->value('id');
+        $kaosId = DB::table('categories')->where('name', 'Kaos')->value('id');
+        $sepatuId = DB::table('categories')->where('name', 'Sepatu')->value('id');
+        $maduId = DB::table('categories')->where('name', 'Madu')->value('id');
+
+        // Masukkan produk sesuai kategori yang valid
         DB::table('products')->insert([
             [
                 'user_id' => 2,
-                'category_id' => 4, // Kemeja
+                'category_id' => $kemejaId, // Kemeja (Pakaian > Atasan > Kemeja)
                 'name' => 'Kemeja Pria Premium',
                 'description' => 'Kemeja pria polos premium, terbuat dari bahan katun berkualitas tinggi 
                                     yang lembut dan nyaman digunakan. Tersedia dalam berbagai ukuran 
@@ -31,7 +38,7 @@ class ProductsTableSeeder extends Seeder
             ],
             [
                 'user_id' => 2,
-                'category_id' => 4, // Kemeja
+                'category_id' => $kemejaId, // Kemeja (Pakaian > Atasan > Kemeja)
                 'name' => 'Kemeja Wanita Elegant',
                 'description' => 'Kemeja wanita polos premium, menggunakan bahan katun berkualitas 
                                     tinggi yang nyaman dipakai. Tersedia dalam berbagai ukuran. 
@@ -44,7 +51,7 @@ class ProductsTableSeeder extends Seeder
             ],
             [
                 'user_id' => 3,
-                'category_id' => 5, // Kaos
+                'category_id' => $kaosId, // Kaos (Pakaian > Atasan > Kaos)
                 'name' => 'Kaos Jogja Heritage',
                 'description' => 'Kaos dengan desain khas Jogja',
                 'price' => 50000.00,
@@ -54,7 +61,7 @@ class ProductsTableSeeder extends Seeder
             ],
             [
                 'user_id' => 3,
-                'category_id' => 3, // Sepatu
+                'category_id' => $sepatuId, // Sepatu (Pakaian > Bawahan > Sepatu)
                 'name' => 'Sepatu Jogja Handmade',
                 'description' => 'Sepatu lokal produksi Jogja dengan kualitas premium',
                 'price' => 400000.00,
@@ -64,7 +71,7 @@ class ProductsTableSeeder extends Seeder
             ],
             [
                 'user_id' => 3,
-                'category_id' => 6, // Madu
+                'category_id' => $maduId, // Madu (Makanan > Madu)
                 'name' => 'Madu Asli Lokal',
                 'description' => 'Madu Lokal Asli Diambil Dari Pedalaman Hutan Yogyakarta Bantul',
                 'price' => 150000.00,

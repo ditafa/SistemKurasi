@@ -220,6 +220,7 @@ function updateStatus(status, notes = '') {
                             <p class="text-sm text-gray-600 mb-1">
                                 <span class="font-medium">Kategori:</span> 
                                 <span class="text-blue-500">{{ $product->category->name ?? 'Tanpa Kategori' }}</span>
+                                >
                             </p>
                             <p class="text-sm text-gray-700 mb-6">
                                 {{ $product->description ?? 'Deskripsi produk belum tersedia.' }}

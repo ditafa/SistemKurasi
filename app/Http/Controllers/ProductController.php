@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\ProductStatusHistory;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 use Carbon\Carbon;
 
 class ProductController extends Controller
@@ -48,22 +50,23 @@ class ProductController extends Controller
             }
         }
 
-        // Filter berdasarkan kategori
+        // Filter berdasarkan kategori bertingkat
         if ($request->has('category') && $request->category !== '') {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('id', $request->category)
-                  ->orWhere('parent_id', $request->category); // Ambil sub-kategori juga
+            $categoryIds = $this->getCategoryAndSubcategories($request->category);
+            $query->whereHas('category', function ($q) use ($categoryIds) {
+                $q->whereIn('id', $categoryIds);
             });
         }
 
         // Filter berdasarkan pencarian
-        if ($request->has('search') && $request->search !== '') {
-            $searchTerm = strtolower($request->search);
+        if ($request->filled('search')) {
+            $searchTerm = trim($request->search);
             $query->where(function ($q) use ($searchTerm) {
-                $q->whereRaw('LOWER(name) LIKE ?', ['%' . $searchTerm . '%'])
-                  ->orWhereRaw('LOWER(description) LIKE ?', ['%' . $searchTerm . '%']);
+                $q->whereRaw('LOWER(name) ILIKE ?', ["%".strtolower($searchTerm)."%"])
+                  ->orWhereRaw('LOWER(description) ILIKE ?', ["%".strtolower($searchTerm)."%"]);
             });
         }
+
 
         // Ambil produk dengan pagination
         $products = $query->paginate(3);
@@ -91,6 +94,18 @@ class ProductController extends Controller
         });
 
         return view('home_page', compact('products', 'categories', 'statuses'));
+    }
+
+    private function getCategoryAndSubcategories($categoryId)
+    {
+        $categoryIds = collect([$categoryId]);
+        $subcategories = Category::where('parent_id', $categoryId)->pluck('id');
+        
+        foreach ($subcategories as $subcategory) {
+            $categoryIds = $categoryIds->merge($this->getCategoryAndSubcategories($subcategory));
+        }
+
+        return $categoryIds;
     }
 
     public function show($id)
