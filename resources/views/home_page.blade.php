@@ -7,6 +7,11 @@
     <link rel="icon" href="https://diskominfo.bantulkab.go.id/assets/Site/img/favicon.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- Tambahkan Library Tom Select -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/js/tom-select.complete.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/css/tom-select.bootstrap5.min.css">
+
+
     <script>
         function filterProducts() {
             const form = document.getElementById('filter-form');
@@ -81,56 +86,68 @@
                 </div>
 
                 <!-- Dropdown Kategori yang Ditingkatkan -->
-<div class="relative w-full md:w-64">
-    <select name="category" onchange="filterCategory(this)" 
-        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-        <option value="" disabled selected hidden>Pilih Kategori</option>
-        <option value="{{ url('/') }}">Semua Kategori</option>
-        
-        @foreach($categories as $category)
-            <option value="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}" 
-                {{ request('category') == $category->id ? 'selected' : '' }}>
-                {{ $category->name }}
-            </option>
+                 
+                <!-- Dropdown Kategori dengan Pencarian -->
+                <div class="relative w-full md:w-80">
+                    <select id="category-select" name="category" onchange="filterCategory(this)" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <option value="" disabled selected hidden>Pilih Kategori</option>
+                        <option value="{{ url('/') }}">Semua Kategori</option>
 
-            @if ($category->children->isNotEmpty()) 
-                @foreach ($category->children as $child)
-                    <option value="{{ request()->fullUrlWithQuery(['category' => $child->id]) }}" 
-                        {{ request('category') == $child->id ? 'selected' : '' }}
-                        class="text-gray-700">
-                        {{ $category->name }} &gt; {{ $child->name }}
-                    </option>
-                    
-                    @if ($child->children->isNotEmpty())
-                        @foreach ($child->children as $subChild)
-                            <option value="{{ request()->fullUrlWithQuery(['category' => $subChild->id]) }}" 
-                                {{ request('category') == $subChild->id ? 'selected' : '' }}
-                                class="text-gray-600">
-                                {{ $category->name }} &gt; {{ $child->name }} &gt; {{ $subChild->name }}
+                        @foreach($categories as $category)
+                            <option value="{{ request()->fullUrlWithQuery(['category' => $category->id]) }}" 
+                                {{ request('category') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
                             </option>
+
+                            @if ($category->children->isNotEmpty()) 
+                                @foreach ($category->children as $child)
+                                    <option value="{{ request()->fullUrlWithQuery(['category' => $child->id]) }}" 
+                                        {{ request('category') == $child->id ? 'selected' : '' }}
+                                        class="text-gray-700">
+                                        {{ $category->name }} > {{ $child->name }}
+                                    </option>
+
+                                    @if ($child->children->isNotEmpty())
+                                        @foreach ($child->children as $subChild)
+                                            <option value="{{ request()->fullUrlWithQuery(['category' => $subChild->id]) }}" 
+                                                {{ request('category') == $subChild->id ? 'selected' : '' }}
+                                                class="text-gray-600">
+                                                {{ $category->name }} > {{ $child->name }} > {{ $subChild->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                @endforeach
+                            @endif
                         @endforeach
-                    @endif
-                @endforeach
-            @endif
-        @endforeach
-    </select>
-    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-        </svg>
-    </div>
-</div>
+                    </select>
+                    
+                    <!-- Ikon Dropdown -->
+                    <img src="{{ asset('images/down-arrow.png') }}" 
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" 
+                        alt="Dropdown Icon">
+                </div>
 
-            <script>
-                function filterCategory(select) {
-                    var selectedValue = select.value;
-                    if (selectedValue) {
-                        window.location.href = selectedValue; // Redirect ke URL filter
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        new TomSelect("#category-select", {
+                            create: false,
+                            sortField: {
+                                field: "text",
+                                direction: "asc"
+                            },
+                            placeholder: "Pilih atau cari kategori",
+                        });
+                    });
+
+                    function filterCategory(select) {
+                        var selectedValue = select.value;
+                        if (selectedValue) {
+                            window.location.href = selectedValue;
+                        }
                     }
-                }
-            </script>
-
-
+                </script>
             </form>
 
             <!-- Products Table -->
