@@ -46,7 +46,8 @@ class ProductsTableSeeder extends Seeder
                                     Perawatan mudah dan tidak mudah kusut.',
                 'price' => 150000.00,
                 'type' => 'variation',
-                'created_at' => Carbon::now()->subDays(4),
+                'created_at' => Carbon::now()->subDays(4)->setTime(9, 30, 0),
+
                 'updated_at' => Carbon::now(),
             ],
             [

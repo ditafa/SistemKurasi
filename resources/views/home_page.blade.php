@@ -44,6 +44,7 @@
         <div class="w-full mx-auto my-4">
             <!-- Search and Filter -->
             <form id="filter-form" action="{{ route('products.index') }}" method="GET" class="flex flex-col md:flex-row gap-3 mb-4 px-4">
+                <!-- Search Field -->
                 <div class="relative flex-grow">
                     <input type="text" 
                         name="search" 
@@ -55,42 +56,29 @@
                         <i class="fas fa-search"></i>
                     </span>
                 </div>
-                <div class="relative w-full md:w-32">
-                <select name="status" onchange="window.location.href=this.value" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
-                    
-                    <option value="" disabled {{ !request('status') ? 'selected' : '' }} hidden>Status</option>
-                    
-                    <option value="{{ request()->url() }}" {{ request('status') === null ? 'selected' : '' }}>
-                        Semua
-                    </option>
-                    
-                    @foreach($statuses as $status)
-                        <option value="{{ request()->fullUrlWithQuery(['status' => strtolower($status)]) }}" 
-                                {{ strtolower(request('status')) === strtolower($status) ? 'selected' : '' }}>
-                            {{ $status }}
+                
+                <!-- Status Field -->
+                <div class="relative w-full md:w-32 ">
+                    <select name="status" onchange="window.location.href=this.value" 
+                            class="w-full h-[42px] px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
+                        <option value="" disabled {{ !request('status') ? 'selected' : '' }} hidden>Status</option>
+                        <option value="{{ request()->url() }}" {{ request('status') === null ? 'selected' : '' }}>
+                            Semua
                         </option>
-                    @endforeach
-                </select>
-
-
-                <script>
-                    function filterProducts(select) {
-                        var selectedValue = select.value;
-                        if (selectedValue) {
-                            window.location.href = selectedValue; // Redirect ke URL yang dipilih
-                        }
-                    }
-                </script>
+                        @foreach($statuses as $status)
+                            <option value="{{ request()->fullUrlWithQuery(['status' => strtolower($status)]) }}" 
+                                    {{ strtolower(request('status')) === strtolower($status) ? 'selected' : '' }}>
+                                {{ $status }}
+                            </option>
+                        @endforeach
+                    </select>
                     <img src="{{ asset('images/down-arrow.png') }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" alt="Dropdown Icon">
                 </div>
 
-                <!-- Dropdown Kategori yang Ditingkatkan -->
-                 
-                <!-- Dropdown Kategori dengan Pencarian -->
+                <!-- Category Field - Menggunakan CSS yang sama persis dengan Status Field -->
                 <div class="relative w-full md:w-80">
                     <select id="category-select" name="category" onchange="filterCategory(this)" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        class="w-full h-[42px] px-4 py-2 border border-gray-300 rounded-md bg-white appearance-none pr-10">
                         <option value="" disabled selected hidden>Pilih Kategori</option>
                         <option value="{{ url('/') }}">Semua Kategori</option>
 
@@ -121,33 +109,66 @@
                             @endif
                         @endforeach
                     </select>
-                    
-                    <!-- Ikon Dropdown -->
                     <img src="{{ asset('images/down-arrow.png') }}" 
                         class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" 
                         alt="Dropdown Icon">
                 </div>
+            </form>
 
+            <style>
+            /* Pastikan Tom Select memiliki ukuran yang sama dengan dropdown biasa */
+            .ts-wrapper {
+                height: 42px !important;
+                width: 100% !important;
+            }
 
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        new TomSelect("#category-select", {
-                            create: false,
-                            sortField: {
-                                field: "text",
-                                direction: "asc"
-                            },
-                            placeholder: "Pilih atau cari kategori",
-                        });
-                    });
+            .ts-control {
+                height: 42px !important;
+                padding: 0.5rem 1rem !important;
+                border-radius: 0.375rem !important;
+                border-color: rgb(209, 213, 219) !important;
+            }
 
-                    function filterCategory(select) {
-                        var selectedValue = select.value;
-                        if (selectedValue) {
-                            window.location.href = selectedValue;
-                        }
+            /* Mengatasi ukuran dropdown */
+            .ts-dropdown {
+                width: 100% !important;
+            }
+            </style>
+
+            <script>
+                function handleSearch(event) {
+                    if (event.key === "Enter") {
+                        document.getElementById("filter-form").submit();
                     }
-                </script>
+                }
+
+                function filterCategory(select) {
+                    var selectedValue = select.value;
+                    if (selectedValue) {
+                        window.location.href = selectedValue;
+                    }
+                }
+
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Konfigurasi TomSelect untuk kategori
+                    var categorySelect = new TomSelect("#category-select", {
+                        create: false,
+                        sortField: {
+                            field: "text",
+                            direction: "asc"
+                        },
+                        placeholder: "Pilih atau cari kategori",
+                        render: {
+                            option: function(data, escape) {
+                                return '<div>' + escape(data.text) + '</div>';
+                            },
+                            item: function(data, escape) {
+                                return '<div>' + escape(data.text) + '</div>';
+                            }
+                        }
+                    });
+                });
+            </script>
             </form>
 
             <!-- Products Table -->

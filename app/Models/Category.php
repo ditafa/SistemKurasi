@@ -26,5 +26,19 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function getFullCategoryPath()
+{
+    $categories = collect([$this->name]);
+    $parent = $this->parent;
+
+    while ($parent) {
+        $categories->prepend($parent->name); // Tambahkan ke awal array
+        $parent = $parent->parent;
+    }
+
+    return $categories->join(' > '); // Gabungkan dengan ">"
+}
+
 }
 

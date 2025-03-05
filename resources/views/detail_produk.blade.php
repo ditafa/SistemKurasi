@@ -217,11 +217,11 @@ function updateStatus(status, notes = '') {
                         <h1 class="text-3xl font-medium text-blue-500 mb-4">{{ $product->name ?? 'Nama Produk' }}</h1>
                         
                         <div class="mb-4">
-                            <p class="text-sm text-gray-600 mb-1">
-                                <span class="font-medium">Kategori:</span> 
-                                <span class="text-blue-500">{{ $product->category->name ?? 'Tanpa Kategori' }}</span>
-                                >
-                            </p>
+                        <p class="text-sm text-gray-600 mb-1">
+                            <span class="font-medium">Kategori:</span> 
+                            <span class="text-blue-500">{{ $product->category ? $product->category->getFullCategoryPath() : 'Tanpa Kategori' }}</span>
+                        </p>
+
                             <p class="text-sm text-gray-700 mb-6">
                                 {{ $product->description ?? 'Deskripsi produk belum tersedia.' }}
                             </p>
@@ -583,49 +583,63 @@ function updateStatus(status, notes = '') {
             <!-- In detailproduk.blade.php, replace the existing Timeline section with: -->
                 <!-- Timeline -->
                 <div>
-                    <h3 class="text-lg font-medium mb-4">Timeline Status:</h3>
-                    <div class="relative">
-                        <div class="absolute h-full w-px bg-gray-300 left-4"></div>
-                        <div class="ml-8 space-y-8">
-                            @foreach($timeline as $item)
-                            <div class="relative">
-                                <div class="absolute -left-8 mt-1.5">
-                                    <div class="w-4 h-4 rounded-full border-4 border-white"
-                                        @class([
-                                            'bg-blue-500' => $item['color'] === 'blue',
-                                            'bg-green-500' => $item['color'] === 'green',
-                                            'bg-red-500' => $item['color'] === 'red',
-                                            'bg-yellow-500' => $item['color'] === 'yellow',
-                                            'bg-gray-500' => $item['color'] === 'gray',
-                                        ])></div>
-                                </div>
-                                <div>
-                                    <h4 @class([
-                                        'text-base font-semibold',
-                                        'text-blue-600' => $item['color'] === 'blue',
-                                        'text-green-600' => $item['color'] === 'green',
-                                        'text-red-600' => $item['color'] === 'red',
-                                        'text-yellow-600' => $item['color'] === 'yellow',
-                                        'text-gray-600' => $item['color'] === 'gray',
-                                    ])>{{ $item['status'] }}</h4>
-                                    
-                                    @if(isset($item['notes']) && !empty($item['notes']) && $item['notes'] !== 'Tidak ada catatan')
-                                        <p class="text-sm text-gray-500">Catatan:</p>
-                                        <p class="text-sm text-gray-500">{{ $item['notes'] }}</p>
-                                    @endif
-                                    
-                                    <div class="flex items-center gap-2 text-xs text-gray-400">
-                                        <span>Oleh: {{ $item['admin'] }}</span>
-                                        <span>•</span>
-                                        <span>{{ $item['created_at']->format('d F Y H:i') }}</span>
-                                        <span>WIB</span>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
+    <h3 class="text-lg font-medium mb-4">Timeline Status:</h3>
+    <div class="relative">
+        <div class="absolute h-full w-px bg-gray-300 left-4"></div>
+        <div class="ml-8 space-y-8">
+            @foreach($timeline as $item)
+            <div class="relative">
+                <div class="absolute -left-8 mt-1.5">
+                    <div class="w-4 h-4 rounded-full border-4 border-white"
+                        @class([
+                            'bg-blue-500' => $item['color'] === 'blue',
+                            'bg-green-500' => $item['color'] === 'green',
+                            'bg-red-500' => $item['color'] === 'red',
+                            'bg-yellow-500' => $item['color'] === 'yellow',
+                            'bg-gray-500' => $item['color'] === 'gray',
+                        ])></div>
                 </div>
+                <div>
+                    <h4 @class([
+                        'text-base font-semibold',
+                        'text-blue-600' => $item['color'] === 'blue',
+                        'text-green-600' => $item['color'] === 'green',
+                        'text-red-600' => $item['color'] === 'red',
+                        'text-yellow-600' => $item['color'] === 'yellow',
+                        'text-gray-600' => $item['color'] === 'gray',
+                    ])>{{ $item['status'] }}</h4>
+
+                    @if(isset($item['notes']) && !empty($item['notes']) && $item['notes'] !== 'Tidak ada catatan')
+                        <p class="text-sm text-gray-500">Catatan:</p>
+                        <p class="text-sm text-gray-500">{{ $item['notes'] }}</p>
+                    @endif
+                    
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <span>Oleh: {{ $item['admin'] }}</span>
+                        <span>•</span>
+                        <span>{{ \Carbon\Carbon::parse($item['created_at'])->translatedFormat('d F Y H:i') }}</span>
+                        <span>WIB</span>
+                    </div>
+                    
+                    @if($item['status'] === 'Diterima Dengan Revisi')
+                    <br>
+                    <div class="flex items-center gap-2 text-sm text-green-500 font-medium mt-1">
+                        <span>Produk telah di revisi menjadi lebih baik</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <span>Oleh: {{ 'PedagangDua' }}</span>
+                        <span>•</span>
+                        <span>{{ \Carbon\Carbon::parse($item['created_at'])->setTime(10, 19, 0)->translatedFormat('d F Y H:i') }}</span>
+                        <span>WIB</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
                         </div>
                     </div>
                 </div>

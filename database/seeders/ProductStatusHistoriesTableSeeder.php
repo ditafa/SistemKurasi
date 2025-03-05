@@ -31,7 +31,7 @@ class ProductStatusHistoriesTableSeeder extends Seeder
             ],
             
             // Riwayat untuk Kaos Jogja Heritage
-           */
+           
             [
                 'product_id' => 3,
                 'admin_id' => 1, // ID admin yang meminta revisi
@@ -40,15 +40,16 @@ class ProductStatusHistoriesTableSeeder extends Seeder
                 'created_at' => Carbon::now()->subDays(3)->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
+            
             [
                 'product_id' => 3,
                 'admin_id' => 1, // ID admin yang meminta revisi
-                'status' => 'diajukan',
+                'status' => null,
                 'notes' => 'Produk telah direvisi menjadi lebih baik',
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
-            /*
+            
             // Riwayat untuk Sepatu Jogja Handmade
             
             [
