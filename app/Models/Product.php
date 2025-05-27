@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\ProductPhoto;
 class Product extends Model
 {
     use HasFactory;
@@ -33,6 +33,11 @@ class Product extends Model
     public function photos()
     {
         return $this->hasMany(ProductPhoto::class);
+    }
+
+    public function firstPhoto()
+    {
+        return $this->hasOne(ProductPhoto::class)->oldestOfMany();
     }
 
     // Relasi dengan ProductStatusHistory

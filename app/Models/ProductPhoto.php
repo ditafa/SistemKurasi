@@ -10,6 +10,11 @@ class ProductPhoto extends Model
     use HasFactory;
 
     protected $fillable = ['product_id', 'variation_id', 'url'];
+    
+    public function photos()
+    {
+        return $this->hasMany(ProductPhoto::class);
+    }
 
     // Relasi dengan Product
     public function product()

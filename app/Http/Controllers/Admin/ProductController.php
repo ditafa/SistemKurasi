@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller; // Pastikan ini ada
 use App\Models\Product;
 use App\Models\ProductStatusHistory;
 use App\Models\Category;
@@ -93,7 +93,7 @@ class ProductController extends Controller
             $product->formatted_status = $status;
         });
 
-        return view('home_page', compact('products', 'categories', 'statuses'));
+        return view('admin.home_page', compact('products', 'categories', 'statuses'));
     }
 
     private function getCategoryAndSubcategories($categoryId)
@@ -109,74 +109,50 @@ class ProductController extends Controller
     }
 
     public function show($id)
-    {
-        // Ambil detail produk dengan relasinya
-        $product = Product::with([
-            'category',
-            'variations',
-            'photos',
-            'statusHistories' => function($query) {
-                $query->with('admin')->orderBy('created_at', 'desc');
-            }
-        ])->findOrFail($id);
+{
+    $product = Product::with([
+        'category',
+        'variations',
+        'photos',
+        'statusHistories' => function($query) {
+            $query->with('admin')->orderBy('created_at', 'desc');
+        },
+        'user' // pastikan relasi user juga dimuat
+    ])->findOrFail($id);
 
-        // Tambahkan foto pertama
-        $product->first_photo = $product->photos->first();
+    $product->first_photo = $product->photos->first();
 
-        // Format status untuk timeline
-        $timeline = collect([
-            [
-                'status' => 'Diajukan',
-                'notes' => 'Produk baru diajukan',
-                'admin' => $product->user->name,
-                'created_at' => $product->created_at,
-                'color' => 'blue'
-            ]
-        ]);
+    // Buat timeline menggunakan method getTimeline (untuk konsistensi)
+    $timeline = $this->getTimeline($product);
 
-        // Tambahkan history status ke timeline
-        $timeline = $timeline->concat($product->statusHistories->map(function($history) {
-            $colors = [
-                'diajukan' => 'blue',
-                'diterima' => 'green',
-                'ditolak' => 'red',
-                'diterima dengan revisi' => 'yellow'
-            ];
+    return view('admin.detail_produk', compact('product', 'timeline'));
+}
 
-            // Standardisasi status untuk display
-            $status = match(strtolower($history->status)) {
-                'diterima dengan revisi' => 'Diterima Dengan Revisi',
-                default => ucfirst(strtolower($history->status))
-            };
-
-            return [
-                'status' => $status,
-                'notes' => $history->notes ?? 'Tidak ada catatan',
-                'admin' => $history->admin->name,
-                'created_at' => $history->created_at,
-                'color' => $colors[strtolower($history->status)] ?? 'gray'
-            ];
-        }));
-        $timeline = $timeline->sortBy('created_at')->values();
-
-        return view('detail_produk', compact('product', 'timeline'));
-    }
 
     public function updateStatus(Request $request, $id)
 {
+    // Validasi input dasar
     $request->validate([
         'status' => 'required|string',
         'notes' => 'nullable|string',
     ]);
 
+    // Validasi custom: notes wajib diisi jika status bukan "diterima"
+    if (strtolower($request->status) !== 'diterima' && empty(trim($request->notes))) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Catatan wajib diisi jika status bukan diterima.'
+        ], 422);
+    }
+
     try {
         $product = Product::with('statusHistories')->findOrFail($id);
-        
+
         // Cek apakah produk sudah pernah diterima atau ditolak
         $isProcessed = $product->statusHistories->contains(function($history) {
             return in_array(strtolower($history->status), ['diterima', 'ditolak']);
         });
-        
+
         if ($isProcessed) {
             return response()->json([
                 'success' => false,
@@ -184,39 +160,42 @@ class ProductController extends Controller
             ], 403);
         }
 
-        // Gunakan Carbon untuk mendapatkan waktu saat ini dalam zona waktu WIB
+        // Waktu sekarang di zona WIB
         $currentTime = Carbon::now('Asia/Jakarta');
 
-        // Simpan status baru ke dalam product_status_histories
+        // Tentukan notes sesuai kondisi
+        $notes = null;
+        if (strtolower($request->status) !== 'diterima') {
+            $notes = $request->notes ?? '';
+        }
+
+        // Buat riwayat status baru
         $statusHistory = new ProductStatusHistory([
             'product_id' => $product->id,
-            'admin_id' => 1, // Ganti dengan auth()->id() jika menggunakan authentication
+            'admin_id' => Auth::id() ?? 1, // Ganti 1 dengan Auth::id() kalau sudah pakai auth
             'status' => $request->status,
-            'notes' => $request->notes ?? '',
+            'notes' => $notes,
         ]);
 
-        // Set created_at secara eksplisit
         $statusHistory->created_at = $currentTime;
-        
         $statusHistory->save();
 
-        // Update status produk jika diperlukan
+        // Update status produk
         $product->status = $request->status;
         $product->save();
 
-        // Load ulang relasi
+        // Load ulang relasi agar timeline up to date
         $product->load(['statusHistories.admin']);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Status produk berhasil diperbarui.',
             'timeline' => $this->getTimeline($product),
         ]);
     } catch (\Exception $e) {
-        // Log error untuk debugging
         \Log::error('Error updating product status: ' . $e->getMessage());
         \Log::error($e->getTraceAsString());
-        
+
         return response()->json([
             'success' => false,
             'message' => 'Terjadi kesalahan saat memperbarui status.',
@@ -226,53 +205,45 @@ class ProductController extends Controller
 
 private function getTimeline($product)
 {
-    try {
-        $timeline = collect([
-            [
-                'status' => 'Diajukan',
-                'notes' => 'Produk baru diajukan',
-                'admin' => $product->user ? $product->user->name : 'System',
-                'created_at' => $product->created_at,
-                'color' => 'blue'
-            ]
-        ]);
+    $timeline = collect([
+        [
+            'status' => 'Diajukan',
+            'notes' => 'Produk baru diajukan',
+            'admin' => $product->user ? $product->user->name : 'System',
+            'created_at' => $product->created_at,
+            'color' => 'blue'
+        ]
+    ]);
 
-        // Pastikan statusHistories sudah di-load
-        if (!$product->relationLoaded('statusHistories')) {
-            $product->load('statusHistories.admin');
-        }
-
-        // Tambahkan history status ke timeline
-        $timeline = $timeline->concat($product->statusHistories->map(function($history) {
-            $colors = [
-                'diajukan' => 'blue',
-                'diterima' => 'green',
-                'ditolak' => 'red',
-                'diterima dengan revisi' => 'yellow'
-            ];
-
-            // Standardisasi status untuk display
-            $status = match(strtolower($history->status)) {
-                'diterima dengan revisi' => 'Diterima Dengan Revisi',
-                default => ucfirst(strtolower($history->status))
-            };
-
-            return [
-                'status' => $status,
-                'notes' => $history->notes ?? 'Tidak ada catatan',
-                'admin' => $history->admin ? $history->admin->name : 'System',
-                'created_at' => $history->created_at,
-                'color' => $colors[strtolower($history->status)] ?? 'gray'
-            ];
-        }));
-
-        return $timeline->sortBy('created_at')->values();
-    } catch (\Exception $e) {
-        \Log::error('Error generating timeline: ' . $e->getMessage());
-        // Return empty timeline in case of error
-        return collect([]);
+    if (!$product->relationLoaded('statusHistories')) {
+        $product->load('statusHistories.admin');
     }
+
+    $timeline = $timeline->concat($product->statusHistories->map(function($history) {
+        $colors = [
+            'diajukan' => 'blue',
+            'diterima' => 'green',
+            'ditolak' => 'red',
+            'diterima dengan revisi' => 'yellow'
+        ];
+
+        $status = match(strtolower($history->status)) {
+            'diterima dengan revisi' => 'Diterima Dengan Revisi',
+            default => ucfirst(strtolower($history->status))
+        };
+
+        return [
+            'status' => $status,
+            'notes' => $history->notes ?? 'Tidak ada catatan',
+            'admin' => $history->admin ? $history->admin->name : 'System',
+            'created_at' => $history->created_at,
+            'color' => $colors[strtolower($history->status)] ?? 'gray'
+        ];
+    }));
+
+    return $timeline->sortBy('created_at')->values();
 }
+
 
 public function getVariation($product, $variation)
 {
@@ -310,4 +281,23 @@ public function getVariation($product, $variation)
         ], 500);
     }
 }
+
+public function dashboard() {
+        $produkPending = Product::where('status_kurasi', 'pending')->get();
+        return view('admin.home_page', compact('produkPending'));
+    }
+
+    public function kurasiProduk(Request $request, $id) {
+        $request->validate([
+            'status_kurasi' => 'required|in:diterima,revisi,ditolak',
+            'catatan_revisi' => 'nullable|string',
+        ]);
+
+        $produk = Product::findOrFail($id);
+        $produk->status_kurasi = $request->input('status_kurasi');
+        $produk->catatan_revisi = $request->input('catatan_revisi');
+        $produk->save();
+
+        return redirect()->route('admin.home')->with('success', 'Produk berhasil dikurasi.');
+    }
 }
