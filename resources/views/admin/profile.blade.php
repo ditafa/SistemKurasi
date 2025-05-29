@@ -2,9 +2,7 @@
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>
-   Profile Pedagang
-  </title>
+  <title>Profile Pedagang</title>
   <script src="https://cdn.tailwindcss.com">
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
@@ -44,7 +42,7 @@
   <div class="flex flex-1">
   <!-- Sidebar -->
   <aside class="bg-[#a9c1d3] w-64 p-6 flex flex-col space-y-6 text-[#555] font-semibold">
-    <a href="{{ route('pedagang.dashbord') }}" class="flex items-center space-x-3 hover:text-blue-700">
+  <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 hover:text-blue-700">
       <!-- Home / Dashboard Icon -->
       <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6" />
@@ -52,7 +50,7 @@
       <span>Dashboard</span>
     </a>
 
-  <a href="{{ route('pedagang.profile') }}" class="flex items-center space-x-3 hover:text-blue-700">
+  <a href="{{ route('admin.profile') }}" class="flex items-center space-x-3 hover:text-blue-700">
     <!-- User Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A10.97 10.97 0 0112 15c2.486 0 4.779.805 6.879 2.154M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -60,7 +58,7 @@
     <span>Profile</span>
   </a>
 
-  <a href="{{ route('pedagang.products.index') }}" class="flex items-center space-x-3 hover:text-blue-700">
+  <a href="{{ route('admin.products.index') }}" class="flex items-center space-x-3 hover:text-blue-700">
     <!-- Box Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4-9 4-9-4z" />
@@ -69,7 +67,7 @@
     <span>Produk Saya</span>
   </a>
 
-  <a href="{{ route('pedagang.notifikasi') }}" class="flex items-center space-x-3 hover:text-blue-700">
+  <a href="{{ route('admin.notifikasi') }}" class="flex items-center space-x-3 hover:text-blue-700">
     <!-- Bell Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -77,7 +75,7 @@
     <span>Notifikasi</span>
   </a>
 
-  <a href="{{ route('pedagang.statistik') }}" class="flex items-center space-x-3 hover:text-blue-700">
+  <a href="{{ route('admin.statistik') }}" class="flex items-center space-x-3 hover:text-blue-700">
     <!-- Chart Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3h2v8h-2zm-4 4v-4h2v4H7zm8 0v-6h2v6h-2zm4 4v-2H5v2h14z" />
@@ -85,7 +83,7 @@
     <span>Statistik</span>
   </a>
 
-  <form action="{{ route('pedagang.logout') }}" method="POST" class="flex items-center space-x-3">
+  <form action="{{ route('admin.logout') }}" method="POST" class="flex items-center space-x-3">
     @csrf
     <button type="submit" class="flex items-center space-x-3 hover:text-red-600">
       <!-- Logout Icon -->

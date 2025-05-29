@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-use App\Models\Admin;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class LoginAdminController extends Controller
 {
@@ -15,27 +14,32 @@ class LoginAdminController extends Controller
     }
 
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-    $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email', 'password');
 
-    if (Auth::guard('admin')->attempt($credentials)) {
-        // Login sukses, redirect ke admin dashboard
-        return redirect()->intended(route('admin.dashboard'));
+        if (Auth::guard('admin')->attempt($credentials)) {
+            // Regenerate session untuk keamanan
+            $request->session()->regenerate();
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->withInput($request->only('email'));
     }
 
-    // Login gagal, kembali dengan pesan error
-    return back()->withErrors(['email' => 'The provided credentials do not match our records.'])
-                 ->withInput($request->only('email'));
-}
-
-public function logout(Request $request)
+    public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('admin.login');
     }
 }

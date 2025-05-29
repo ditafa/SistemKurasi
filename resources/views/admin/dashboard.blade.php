@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard Pedagang - Kurasi Bantul</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
+<html lang="id" x-data="{ sidebarOpen: false }" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin - Kurasi Bantul</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="//unpkg.com/alpinejs" defer></script>
+</head>
   <body class="h-full bg-[#F8FFF9] text-gray-700 font-sans flex">
 
     <!-- Sidebar (selalu tampil di desktop) -->
@@ -27,9 +28,10 @@
             <a href="/kontak" class="hover:text-green-200">Kontak</a>
           <hr class="border-white/40 my-6" />
           <div class="space-y-3">
-            <a href="{{ route('pedagang.dashboard') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Dashboard</a>
-            <a href="{{ route('pedagang.dataproduk') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Daftar Produk</a>
-            <form action="{{ route('pedagang.logout') }}" method="POST">
+            <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Dashboard</a>
+            <a href="{{ route('admin.dataproduk.index') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Data Produk</a>
+            <a href="{{ route('admin.statistik') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Statistik</a>
+            <form action="{{ route('admin.logout') }}" method="POST">
               @csrf
               <button type="submit" class="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition">Logout</button>
             </form>
@@ -47,7 +49,7 @@
     <!-- Main Content -->
     <main class="flex-1 p-6 md:ml-64 flex flex-col items-center justify-center min-h-screen">
       <header class="max-w-4xl mb-12 text-center">
-        <h1 class="text-4xl font-extrabold text-[#4a8a4a] leading-tight mb-2">DASHBOARD PEDAGANG</h1>
+        <h1 class="text-4xl font-extrabold text-[#4a8a4a] leading-tight mb-2">DASHBOARD ADMIN</h1>
         <p class="text-sm text-gray-600 max-w-lg mx-auto">
           Pedagang dapat mengajukan produk serta mencatat riwayat perubahan status secara transparan.
         </p>

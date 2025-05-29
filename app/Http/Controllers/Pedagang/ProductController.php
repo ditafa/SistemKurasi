@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Pedagang;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Product; 
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
+
 class ProductController extends Controller
 {
     // Tampilkan halaman dashboard pedagang (bisa berisi ringkasan atau daftar produk)
     public function index()
     {
-        // Contoh ambil semua produk milik pedagang yang sedang login
-$products = Product::where('user_id', auth()->id())->get();
+        // Ambil semua produk milik pedagang yang sedang login
+        $products = Product::where('user_id', Auth::id())->get();
 
         // Kirim data produk ke view dashboard pedagang
-        return view('pedagang.listProduk', compact('products'));
+        return view('pedagang.dashboardPedagang', compact('products'));
     }
 
     // Tampilkan form tambah produk
@@ -27,16 +29,16 @@ $products = Product::where('user_id', auth()->id())->get();
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'  => 'required|string|max:255',
             'price' => 'required|numeric',
-            // validasi lain sesuai kebutuhan
+            // Validasi lain sesuai kebutuhan
         ]);
 
         Product::create([
-            'name' => $request->name,
-            'price' => $request->price,
-            'pedagang_id' => auth()->guard('pedagang')->id(),
-            // isi field lain sesuai kebutuhan
+            'name'       => $request->name,
+            'price'      => $request->price,
+            'pedagang_id' => Auth::guard('pedagang')->id(),
+            // Isi field lain sesuai kebutuhan
         ]);
 
         return redirect()->route('pedagang.dashboard')->with('success', 'Produk berhasil ditambahkan');
@@ -65,12 +67,12 @@ $products = Product::where('user_id', auth()->id())->get();
         $this->authorize('update', $product);
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'  => 'required|string|max:255',
             'price' => 'required|numeric',
         ]);
 
         $product->update([
-            'name' => $request->name,
+            'name'  => $request->name,
             'price' => $request->price,
         ]);
 
@@ -87,9 +89,21 @@ $products = Product::where('user_id', auth()->id())->get();
         return redirect()->route('pedagang.dashboard')->with('success', 'Produk berhasil dihapus');
     }
 
+    // Relasi creator (jika dibutuhkan)
     public function creator()
-{
-    return $this->belongsTo(User::class, 'created_by');
-}
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
+    // Tampilkan form untuk membuat produk variasi
+    public function createVariation()
+    {
+        return view('pedagang.Create_prodkVariasi'); // Pastikan file blade ini sudah dibuat
+    }
+
+    // Tampilkan form untuk membuat produk tunggal
+    public function createSingle()
+    {
+        return view('pedagang.Create_produkTunggal'); // Pastikan file blade ini sudah dibuat
+    }
 }
