@@ -12,9 +12,14 @@ class Product extends Model
     protected $fillable = ['user_id', 'category_id', 'name', 'description', 'price', 'type', 'status'];
 
     // Relasi dengan User (Pedagang)
-    public function user()
+    //public function user()
+    //{
+    //    return $this->belongsTo(User::class);
+   // }
+
+    public function pedagang()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id'); // Ganti 'user_id' jika nama foreign key berbeda
     }
 
     // Relasi dengan Category

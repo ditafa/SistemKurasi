@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard Admin - Kurasi Bantul</title>
+    <title>Daftar Produk Pedagang- Kurasi Bantul</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="h-full bg-[#F8FFF9] text-gray-700 font-sans flex">
@@ -51,9 +51,7 @@
         <!-- Produk Box -->
         <section class="bg-[#e6f0d9] border border-[#5a8a4f] rounded-xl p-8 max-w-5xl shadow-inner">
           <h2 class="text-lg font-bold text-[#5a5a5a] mb-6">Daftar Produk</h2>
-          <button class="absolute top-8 right-8 bg-[#0f6b3f] text-white text-sm font-semibold rounded-full px-5 py-2">
-       Tambah Produk
-      </button>
+          
           <!-- Search and Filters -->
           <div class="bg-[#f0f7f3] border border-[#a9c6d1] rounded-xl p-6 shadow-md overflow-x-auto">
             <form class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6" role="search">
@@ -101,6 +99,11 @@
                 <tr class="border-t border-[#a9c6d1] h-12"></tr>
               </tbody>
             </table>
+
+            <a href="{{ route('pedagang.produk.create') }}" class="absolute top-8 right-8 bg-[#0f6b3f] text-white text-sm font-semibold rounded-full px-5 py-2">
+            Tambah Produk
+          </a>
+
 
             <!-- Pagination -->
             <nav class="mt-6 flex items-center gap-1 text-xs text-[#5a8a4f] select-none" aria-label="Pagination">

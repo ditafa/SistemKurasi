@@ -18,11 +18,31 @@ class PedagangsTableSeeder extends Seeder
         DB::table('pedagangs')->truncate();
 
         DB::table('pedagangs')->insert([
-            'name' => 'pedagang1',
-            'email' => 'pedagang1@example.com',
-            'password' => Hash::make('password123'),
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'id' => 1,
+                'name' => 'pedagang1',
+                'email' => 'pedagang1@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'name' => 'pedagang2',
+                'email' => 'pedagang2@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 3,
+                'name' => 'pedagang3',
+                'email' => 'pedagang3@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
+
     }
 }

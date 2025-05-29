@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relasi dengan users
+            // migration products
+            $table->foreignId('pedagang_id')->constrained('pedagangs')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade'); // Relasi dengan categories
             $table->string('name');
             $table->text('description')->nullable();

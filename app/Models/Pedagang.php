@@ -11,8 +11,14 @@ class Pedagang extends Authenticatable
     //use HasFactory;
     use Notifiable;
 
+    protected $table = 'pedagangs';
+
     protected $fillable = [
         'name', 'email', 'password',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 }
 

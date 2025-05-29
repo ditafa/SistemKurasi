@@ -16,21 +16,22 @@
           <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo" class="h-16" />
         </div>
 
-        <!-- Navigation -->
-        <nav class="flex flex-col space-y-4 text-sm font-medium">
-          <a href="/" class="hover:text-green-200">Beranda</a>
-          <a href="/about" class="hover:text-green-200">Tentang Kami</a>
-          <a href="/kontak" class="hover:text-green-200">Kontak</a>
+                <!-- Navigation -->
+            <nav class="flex flex-col space-y-4 text-sm font-medium">
+            <a href="/" class="hover:text-green-200">Beranda</a>
+            <a href="/about" class="hover:text-green-200">Tentang Kami</a>
+            <a href="/kontak" class="hover:text-green-200">Kontak</a>
           <hr class="border-white/40 my-6" />
           <div class="space-y-3">
             <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Dashboard</a>
             <a href="{{ route('admin.dataproduk.index') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Data Produk</a>
+            <a href="{{ route('admin.kategori.index') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Kategori</a>
             <a href="{{ route('admin.statistik') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Statistik</a>
             <form action="{{ route('admin.logout') }}" method="POST">
-              @csrf
-              <button type="submit" class="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition">Logout</button>
+                @csrf
+                <button type="submit">Logout</button>
             </form>
-          </div>
+          </div>  
         </nav>
       </div>
 
