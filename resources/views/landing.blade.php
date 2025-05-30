@@ -16,11 +16,11 @@
   >
     <aside class="w-64 h-full bg-[#14532D] text-white p-6 space-y-6">
       <div class="flex justify-between items-center mb-6">
-      <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo" class="h-16">
-      <button class="md:hidden" @click="sidebarOpen = false">✕</button>
-    </div>
+        <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo" class="h-16">
+        <button class="md:hidden" @click="sidebarOpen = false">✕</button>
+      </div>
 
-    <nav class="flex flex-col space-y-4 text-sm font-medium">
+      <nav class="flex flex-col space-y-4 text-sm font-medium">
         <a href="/" class="hover:text-green-200">Beranda</a>
         <a href="/about" class="hover:text-green-200">Tentang Kami</a>
         <a href="/kontak" class="hover:text-green-200">Kontak</a>
@@ -42,7 +42,7 @@
   ></div>
 
   <!-- Main Content -->
-  <div class="flex-1 overflow-y-auto">
+  <div class="flex-1 flex flex-col min-h-screen">
     <!-- Topbar Mobile -->
     <header class="md:hidden flex justify-between items-center p-4 bg-white shadow">
       <button @click="sidebarOpen = true">☰</button>
@@ -50,21 +50,28 @@
     </header>
 
     <!-- Page Content -->
-    <main class="p-8">
-    <!-- Judul besar -->
-    <h3 class="text-5xl font-extrabold text-[#14532D] mb-4 tracking-tight leading-tight">
-      <span class="bg-gradient-to-r from-green-600 to-lime-400 text-transparent bg-clip-text">Selamat Datang di Kurasi Bantul
-    </h3>
+    <main class="flex-grow p-8">
+      <!-- Judul besar -->
+      <h3 class="text-5xl font-extrabold text-[#14532D] mb-4 tracking-tight leading-tight">
+        <span class="bg-gradient-to-r from-green-600 to-lime-400 text-transparent bg-clip-text">
+          Selamat Datang di Kurasi Bantul
+        </span>
+      </h3>
 
-    <!-- Deskripsi -->
-    <p class="mb-6 text-lg text-gray-600">Temukan produk lokal terbaik dengan sistem kurasi terpercaya dari Kabupaten Bantul.</p>
+      <!-- Deskripsi -->
+      <p class="mb-6 text-lg text-gray-600">Temukan produk lokal terbaik dengan sistem kurasi terpercaya dari Kabupaten Bantul.</p>
 
-    <!-- Tombol -->
-    <div class="space-x-4">
-      <a href="/produk" class="bg-[#4CAF50] text-white px-6 py-3 rounded-lg shadow hover:bg-[#388E3C] transition">Jelajahi Sekarang</a>
-      <a href="/pendaftaran" class="bg-white text-[#14532D] px-6 py-3 border border-[#14532D] rounded-lg shadow hover:bg-gray-100 transition">Daftar Sekarang</a>
-    </div>
-  </main>
+      <!-- Tombol -->
+      <div class="space-x-4">
+        <a href="/produk" class="bg-[#4CAF50] text-white px-6 py-3 rounded-lg shadow hover:bg-[#388E3C] transition">Jelajahi Sekarang</a>
+        <a href="/pendaftaran" class="bg-white text-[#14532D] px-6 py-3 border border-[#14532D] rounded-lg shadow hover:bg-gray-100 transition">Daftar Sekarang</a>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#14532D] text-white text-sm py-6 text-center">
+      <p>© 2025 Kurasi Bantul. Semua hak dilindungi.</p>
+    </footer>
 
 </body>
 </html>
