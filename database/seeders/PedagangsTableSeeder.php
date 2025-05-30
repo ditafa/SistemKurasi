@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class PedagangsTableSeeder extends Seeder
 {
@@ -18,11 +16,22 @@ class PedagangsTableSeeder extends Seeder
         DB::table('pedagangs')->truncate();
 
         DB::table('pedagangs')->insert([
-            'name' => 'pedagang1',
-            'email' => 'pedagang1@example.com',
-            'password' => Hash::make('password123'),
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'id' => 2,
+                'name' => 'Pedagang Dua',
+                'email' => 'pedagang2@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 3,
+                'name' => 'Pedagang Tiga',
+                'email' => 'pedagang3@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

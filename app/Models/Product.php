@@ -11,6 +11,11 @@ class Product extends Model
 
     protected $fillable = ['user_id', 'category_id', 'name', 'description', 'price', 'type', 'status'];
 
+    public function pedagang()
+    {
+        return $this->belongsTo(\App\Models\Pedagang::class);
+    }
+
     // Relasi dengan User (Pedagang)
     public function user()
     {

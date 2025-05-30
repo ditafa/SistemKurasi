@@ -1,25 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginAdminController;
-use App\Http\Controllers\Auth\LoginPedagangController;
 
-// Admin Controllers
+// Controller Admin
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DataProductController as AdminProductController;
 use App\Http\Controllers\Admin\NotifikasiController as AdminNotifikasiController;
 use App\Http\Controllers\Admin\StatistikController;
 
-// Pedagang Controllers
-use App\Http\Controllers\Pedagang\ProductController as PedagangProductController;
+// Controller Auth
+use App\Http\Controllers\Auth\LoginAdminController;
+use App\Http\Controllers\Auth\LoginPedagangController;
+
+// Controller Pedagang
+use App\Http\Controllers\Pedagang\DataProductController as PedagangProductController;
 use App\Http\Controllers\Pedagang\ProductPhotoController;
 use App\Http\Controllers\Pedagang\ProfileController;
 use App\Http\Controllers\Pedagang\NotificationController as PedagangNotificationController;
 use App\Http\Controllers\Pedagang\StatisticsController;
 
 // =============================
-// Alias route 'login' default
-// supaya middleware 'auth' tidak error mencari route 'login'
+// Alias route 'login' default supaya middleware 'auth' tidak error mencari route 'login'
 // Redirect ke login pedagang (bisa disesuaikan ke admin jika mau)
 Route::redirect('/login', '/login-pedagang')->name('login');
 
@@ -47,27 +48,23 @@ Route::post('/logout-admin', [LoginAdminController::class, 'logout'])->name('adm
 // =============================
 Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
 
-    // Dashboard admin
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Data produk admin
     Route::get('/dataproduk', [AdminProductController::class, 'index'])->name('dataproduk.index');
+    Route::get('/dataproduk/{id}', [AdminProductController::class, 'show'])->name('dataproduk.show');
+    Route::post('/dataproduk/{id}/kurasi', [AdminProductController::class, 'kurasi'])->name('dataproduk.kurasi');
 
-    // Detail produk admin
     Route::get('/produk/{id}', [AdminProductController::class, 'show'])->name('produk.detail');
 
-    // Resource produk admin (CRUD lengkap)
     Route::resource('products', AdminProductController::class);
 
-    // Statistik admin
     Route::get('/statistik', [StatistikController::class, 'index'])->name('statistik');
 
-    // Halaman profil admin
     Route::view('/profile', 'admin.profile')->name('profile');
 
-    // Notifikasi admin
     Route::get('/notifikasi', [AdminNotifikasiController::class, 'index'])->name('notifikasi');
 });
+
 
 // =============================
 // Login & Logout Pedagang
@@ -82,9 +79,36 @@ Route::post('/logout-pedagang', [LoginPedagangController::class, 'logout'])->nam
 Route::prefix('pedagang')->name('pedagang.')->middleware(['auth:pedagang'])->group(function () {
 
     // Dashboard pedagang
-    Route::get('/dashboard', [PedagangProductController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [PedagangProductController::class, 'dashboard'])->name('dashboard');
 
     // Daftar produk pedagang
     Route::get('/dataproduk', [PedagangProductController::class, 'index'])->name('dataproduk');
 
+    // Tambah produk (form)
+    Route::get('/produk/create', [PedagangProductController::class, 'create'])->name('produk.create');
+
+    // Simpan produk baru
+    Route::post('/produk', [PedagangProductController::class, 'store'])->name('produk.store');
+
+    // Detail produk pedagang
+    Route::get('/produk/{product}', [PedagangProductController::class, 'show'])->name('produk.show');
+
+    // Edit produk pedagang
+    Route::get('/produk/{product}/edit', [PedagangProductController::class, 'edit'])->name('produk.edit');
+
+    // Update produk pedagang
+    Route::put('/produk/{product}', [PedagangProductController::class, 'update'])->name('produk.update');
+
+    // Hapus produk pedagang
+    Route::delete('/produk/{product}', [PedagangProductController::class, 'destroy'])->name('produk.destroy');
+
+    // Halaman profil pedagang
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Notifikasi pedagang
+    Route::get('/notifikasi', [PedagangNotificationController::class, 'index'])->name('notifikasi');
+
+    // Statistik pedagang
+    Route::get('/statistik', [StatisticsController::class, 'index'])->name('statistik');
 });

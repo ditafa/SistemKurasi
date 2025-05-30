@@ -8,77 +8,69 @@ use Carbon\Carbon;
 
 class ProductsTableSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
-        Carbon::setLocale('id');
-        date_default_timezone_set('Asia/Jakarta');
-
         DB::table('products')->truncate();
 
-        // Ambil ID kategori berdasarkan nama untuk memastikan konsistensi
-        $kemejaId = DB::table('categories')->where('name', 'Kemeja')->value('id');
-        $kaosId = DB::table('categories')->where('name', 'Kaos')->value('id');
-        $sepatuId = DB::table('categories')->where('name', 'Sepatu')->value('id');
-        $maduId = DB::table('categories')->where('name', 'Madu')->value('id');
-
-        // Masukkan produk sesuai kategori yang valid
         DB::table('products')->insert([
             [
-                'user_id' => 2,
-                'category_id' => $kemejaId, // Kemeja (Pakaian > Atasan > Kemeja)
+                'category_id' => 5,
                 'name' => 'Kemeja Pria Premium',
-                'description' => 'Kemeja pria polos premium, terbuat dari bahan katun berkualitas tinggi 
-                                    yang lembut dan nyaman digunakan. Tersedia dalam berbagai ukuran 
-                                    dengan desain elegan yang cocok untuk acara formal maupun santai. 
+                'description' => 'Kemeja pria polos premium, terbuat dari bahan katun berkualitas tinggi
+                                    yang lembut dan nyaman digunakan. Tersedia dalam berbagai ukuran
+                                    dengan desain elegan yang cocok untuk acara formal maupun santai.
                                     Mudah dirawat, tidak mudah kusut, dan rapi sepanjang hari.',
-                'price' => 200000.00,
+                'pedagang_id' => 2,
+                'price' => 200000,
                 'type' => 'variation',
-                'created_at' => Carbon::now()->subDays(4),
-                'updated_at' => Carbon::now(),
+                'created_at' => Carbon::create(2025, 5, 26, 21, 24, 11),
+                'updated_at' => Carbon::create(2025, 5, 30, 21, 24, 11),
             ],
             [
-                'user_id' => 2,
-                'category_id' => $kemejaId, // Kemeja (Pakaian > Atasan > Kemeja)
+                'category_id' => 5,
                 'name' => 'Kemeja Wanita Elegant',
-                'description' => 'Kemeja wanita polos premium, menggunakan bahan katun berkualitas 
-                                    tinggi yang nyaman dipakai. Tersedia dalam berbagai ukuran. 
+                'description' => 'Kemeja wanita polos premium, menggunakan bahan katun berkualitas
+                                    tinggi yang nyaman dipakai. Tersedia dalam berbagai ukuran.
                                     Cocok untuk acara formal maupun casual.
                                     Perawatan mudah dan tidak mudah kusut.',
-                'price' => 150000.00,
+                'pedagang_id' => 2,
+                'price' => 150000,
                 'type' => 'variation',
-                'created_at' => Carbon::now()->subDays(4)->setTime(9, 30, 0),
-
-                'updated_at' => Carbon::now(),
+                'created_at' => Carbon::create(2025, 5, 26, 9, 30, 0),
+                'updated_at' => Carbon::create(2025, 5, 30, 21, 24, 11),
             ],
             [
-                'user_id' => 3,
-                'category_id' => $kaosId, // Kaos (Pakaian > Atasan > Kaos)
+                'category_id' => 6,
                 'name' => 'Kaos Jogja Heritage',
                 'description' => 'Kaos dengan desain khas Jogja',
-                'price' => 50000.00,
+                'pedagang_id' => 3,
+                'price' => 50000,
                 'type' => 'variation',
-                'created_at' => Carbon::now()->subDays(4),
-                'updated_at' => Carbon::now(),
+                'created_at' => Carbon::create(2025, 5, 26, 21, 24, 11),
+                'updated_at' => Carbon::create(2025, 5, 30, 21, 24, 11),
             ],
             [
-                'user_id' => 3,
-                'category_id' => $sepatuId, // Sepatu (Pakaian > Bawahan > Sepatu)
+                'category_id' => 8,
                 'name' => 'Sepatu Jogja Handmade',
                 'description' => 'Sepatu lokal produksi Jogja dengan kualitas premium',
-                'price' => 400000.00,
+                'pedagang_id' => 3,
+                'price' => 400000,
                 'type' => 'variation',
-                'created_at' => Carbon::now()->subDays(4),
-                'updated_at' => Carbon::now(),
+                'created_at' => Carbon::create(2025, 5, 26, 21, 24, 11),
+                'updated_at' => Carbon::create(2025, 5, 30, 21, 24, 11),
             ],
             [
-                'user_id' => 3,
-                'category_id' => $maduId, // Madu (Makanan > Madu)
+                'category_id' => 9,
                 'name' => 'Madu Asli Lokal',
                 'description' => 'Madu Lokal Asli Diambil Dari Pedalaman Hutan Yogyakarta Bantul',
-                'price' => 150000.00,
+                'pedagang_id' => 3,
+                'price' => 150000,
                 'type' => 'single',
-                'created_at' => Carbon::now()->subDays(4),
-                'updated_at' => Carbon::now(),
+                'created_at' => Carbon::create(2025, 5, 26, 21, 24, 11),
+                'updated_at' => Carbon::create(2025, 5, 30, 21, 24, 11),
             ],
         ]);
     }
