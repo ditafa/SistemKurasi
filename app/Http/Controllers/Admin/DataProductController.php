@@ -11,7 +11,7 @@ class DataProductController  extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->paginate(10); // Ambil data produk, pagination optional
+        $products = Product::with('pedagang')->get(); // Ambil data produk, pagination optional
         return view('admin.dataproduk', compact('products'));
     }
 

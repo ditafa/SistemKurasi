@@ -19,7 +19,11 @@ class DataProductController extends Controller
         $products = Product::where('pedagang_id', $pedagang->id)->get();
 
         // Kirim ke view
+<<<<<<< HEAD
         return view('pedagang.dataproduk', compact('products'));
+=======
+        return redirect()->route('pedagang.dataproduk')->with('success', 'Produk berhasil ditambahkan! Lihat di daftar produk.');
+>>>>>>> 0b8f075c0de126b9bf365118610af27c173bcc45
     }
 
     public function dashboard()
@@ -29,7 +33,12 @@ class DataProductController extends Controller
 
     public function create()
     {
+<<<<<<< HEAD
             $categories = \App\Models\Category::all();  // Ambil semua kategori
+=======
+            //$categories = \App\Models\Category::all();  // Ambil semua kategori
+        $categories = Category::with('parent')->get();
+>>>>>>> 0b8f075c0de126b9bf365118610af27c173bcc45
         return view('pedagang.products.create', compact('categories'));  // kirim ke view
     }
 
@@ -50,7 +59,12 @@ class DataProductController extends Controller
     }
 
     $product = new \App\Models\Product($validated);
+<<<<<<< HEAD
     $product->pedagang_id = auth()->guard('pedagang')->id();
+=======
+    //$product->pedagang_id = auth()->guard('pedagang')->id();
+    $product->user_id = auth()->guard('pedagang')->id(); 
+>>>>>>> 0b8f075c0de126b9bf365118610af27c173bcc45
     $product->save();
 
     return redirect()->back()->with('success', 'Produk berhasil ditambahkan!');

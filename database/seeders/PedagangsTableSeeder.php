@@ -17,8 +17,16 @@ class PedagangsTableSeeder extends Seeder
 
         DB::table('pedagangs')->insert([
             [
+                'id' => 1,
+                'name' => 'pedagang1',
+                'email' => 'pedagang1@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'id' => 2,
-                'name' => 'Pedagang Dua',
+                'name' => 'pedagang2',
                 'email' => 'pedagang2@example.com',
                 'password' => Hash::make('password123'),
                 'created_at' => now(),
@@ -26,8 +34,23 @@ class PedagangsTableSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'name' => 'Pedagang Tiga',
+                'name' => 'pedagang3',
                 'email' => 'pedagang3@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 4,
+                'name' => 'pedagang4',
+                'email' => 'pedagang4@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],[
+                'id' => 5,
+                'name' => 'pedagang5',
+                'email' => 'pedagang5@example.com',
                 'password' => Hash::make('password123'),
                 'created_at' => now(),
                 'updated_at' => now(),
