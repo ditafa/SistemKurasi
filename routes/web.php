@@ -2,93 +2,136 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Controller Admin
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\DataProductController as AdminProductController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\NotifikasiController as AdminNotifikasiController;
-use App\Http\Controllers\Admin\StatistikController;
+// =============================
+// Import Controllers
+// =============================
 
-// Controller Auth
+// Auth Controllers
 use App\Http\Controllers\Auth\LoginAdminController;
 use App\Http\Controllers\Auth\LoginPedagangController;
 
-// Controller Pedagang
+// Admin Controllers
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DataProductController as AdminDataProductController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\NotifikasiController;
+use App\Http\Controllers\Admin\StatistikController;
+
+// Pedagang Controllers
 use App\Http\Controllers\Pedagang\DashboardController as PedagangDashboardController;
-use App\Http\Controllers\Pedagang\DataProductController as PedagangProductController;
-use App\Http\Controllers\Pedagang\ProductPhotoController;
-use App\Http\Controllers\Pedagang\ProfileController;
+use App\Http\Controllers\Pedagang\DataProductController as PedagangDataProductController;
 use App\Http\Controllers\Pedagang\PedagangNotificationController;
+use App\Http\Controllers\Pedagang\ProfileController;
 use App\Http\Controllers\Pedagang\StatisticsController;
+use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\ContactController;
 
 
 // =============================
-// Alias route 'login' default supaya middleware 'auth' tidak error mencari route 'login'
-// Redirect ke login pedagang (bisa disesuaikan ke admin jika mau)
-Route::redirect('/login', '/login-pedagang')->name('login');
+// Halaman Umum (Publik)
+// =============================
 
-// =============================
-// Route Publik (Umum)
-// =============================
-Route::view('/', 'landing')->name('landing');
-Route::view('/about', 'about')->name('about');
-Route::view('/kontak', 'contact')->name('kontak');
+Route::view('/', 'landing')->name('landing'); // Halaman landing page
+Route::view('/about', 'about')->name('about'); // Halaman about
+Route::view('/kontak', 'kontak')->name('kontak');  // Halaman kontak
+Route::get('/pendaftaran', [PendaftaranController::class, 'showForm']);
+Route::post('/pendaftaran', [PendaftaranController::class, 'submitForm'])->name('pendaftaran.submit');
+Route::post('/kontak', [ContactController::class, 'store'])->name('kontak.store');
+
+// Alias route 'login' agar default Laravel tidak error, redirect ke pedagang login
+Route::get('/login', fn () => redirect()->route('pedagang.login'))->name('login');
 
 // =============================
 // Login & Logout Admin
 // =============================
-Route::get('/login-admin', [LoginAdminController::class, 'showLoginForm'])->middleware('guest:admin')->name('admin.login');
-Route::post('/login-admin', [LoginAdminController::class, 'login'])->middleware('guest:admin')->name('admin.login.submit');
-Route::post('/logout-admin', [LoginAdminController::class, 'logout'])->name('admin.logout');
 
-// =============================
-// Route Group Admin (Autentikasi dan Akses Admin)
-// =============================
-Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::resource('kategori', CategoryController::class);
-
-    Route::get('/dataproduk', [AdminProductController::class, 'index'])->name('dataproduk.index');
-    Route::get('/dataproduk/{id}', [AdminProductController::class, 'show'])->name('dataproduk.show');
-    Route::post('/dataproduk/{id}/kurasi', [AdminProductController::class, 'kurasi'])->name('dataproduk.kurasi');
-
-    Route::get('/produk/{id}', [AdminProductController::class, 'show'])->name('produk.detail');
-
-    Route::resource('products', AdminProductController::class);
-
-    Route::get('/statistik', [StatistikController::class, 'index'])->name('statistik');
-
-    Route::view('/profile', 'admin.profile')->name('profile');
-
-    Route::get('/notifikasi', [AdminNotifikasiController::class, 'index'])->name('notifikasi');
+Route::middleware('guest:admin')->group(function () {
+    // Menampilkan form login admin
+    Route::get('/login-admin', [LoginAdminController::class, 'showLoginForm'])->name('admin.login');
+    // Menangani login admin
+    Route::post('/login-admin', [LoginAdminController::class, 'login'])->name('admin.login.submit');
 });
+
+// Menangani logout admin
+Route::post('/logout-admin', [LoginAdminController::class, 'logout'])
+    ->middleware('auth:admin')
+    ->name('admin.logout');
 
 // =============================
 // Login & Logout Pedagang
 // =============================
-Route::get('/login-pedagang', [LoginPedagangController::class, 'showLoginForm'])->middleware('guest:pedagang')->name('pedagang.login');
-Route::post('/login-pedagang', [LoginPedagangController::class, 'login'])->middleware('guest:pedagang')->name('pedagang.login.submit');
-Route::post('/logout-pedagang', [LoginPedagangController::class, 'logout'])->name('pedagang.logout');
+
+Route::middleware('guest:pedagang')->group(function () {
+    // Menampilkan form login pedagang
+    Route::get('/login-pedagang', [LoginPedagangController::class, 'showLoginForm'])->name('pedagang.login');
+    // Menangani login pedagang
+    Route::post('/login-pedagang', [LoginPedagangController::class, 'login'])->name('pedagang.login.submit');
+});
+
+// Menangani logout pedagang
+Route::post('/logout-pedagang', [LoginPedagangController::class, 'logout'])
+    ->middleware('auth:pedagang')
+    ->name('pedagang.logout');
 
 // =============================
-// Route Group Pedagang (Autentikasi dan Akses Pedagang)
+// Route Admin (middleware auth:admin)
 // =============================
-Route::prefix('pedagang')->name('pedagang.')->middleware(['auth:pedagang'])->group(function () {
+
+Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
+    // Dashboard Admin
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Resource route produk admin
+    Route::resource('products', AdminDataProductController::class);
+
+    // Route khusus untuk kurasi produk (POST)
+    Route::post('products/{product}/kurasi', [AdminDataProductController::class, 'kurasi'])->name('products.kurasi');
+
+    // Resource route kategori produk
+    Route::resource('kategori', CategoryController::class);
+
+    // Notifikasi Admin
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
+
+    // Tandai semua notifikasi sebagai sudah dibaca
+    Route::post('/notifikasi/mark-all-as-read', [NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
+
+    // Tandai satu notifikasi sebagai sudah dibaca
+    Route::patch('/notifikasi/{id}/mark-as-read', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
+
+    // Statistik Admin
+    Route::get('/statistik', [StatistikController::class, 'index'])->name('statistik');
+
+    // Profile Admin
+    Route::view('/profile', 'admin.profile')->name('profile');
+});
+
+
+// Menambahkan route pencarian produk khusus admin
+Route::get('/admin/products/search', [AdminDataProductController::class, 'search']);
+
+// =============================
+// Route Pedagang (middleware auth:pedagang)
+// =============================
+
+Route::prefix('pedagang')->name('pedagang.')->middleware('auth:pedagang')->group(function () {
+    // Dashboard Pedagang
     Route::get('/dashboard', [PedagangDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/dataproduk', [PedagangProductController::class, 'index'])->name('dataproduk');
-    Route::get('/produk/create', [PedagangProductController::class, 'create'])->name('produk.create');
-    Route::post('/produk', [PedagangProductController::class, 'store'])->name('produk.store');
-    Route::get('/produk/{product}', [PedagangProductController::class, 'show'])->name('produk.show');
-    Route::get('/produk/{product}/edit', [PedagangProductController::class, 'edit'])->name('produk.edit');
-    Route::put('/produk/{product}', [PedagangProductController::class, 'update'])->name('produk.update');
-    Route::delete('/produk/{product}', [PedagangProductController::class, 'destroy'])->name('produk.destroy');
+    // Resource route produk pedagang
+    Route::resource('produk', PedagangDataProductController::class);
 
+    // Aliasing '/dataproduk' ke index produk pedagang
+    Route::get('/dataproduk', fn () => redirect()->route('pedagang.produk.index'))->name('dataproduk');
+
+    // Notifikasi Pedagang
+    Route::get('/notifikasi', [PedagangNotificationController::class, 'index'])->name('notifikasi');
+    Route::post('/notifikasi/{id}/baca', [PedagangNotificationController::class, 'markAsRead'])->name('notifikasi.baca');
+
+    // Statistik Pedagang
+    Route::get('/statistik', [StatisticsController::class, 'index'])->name('statistik');
+
+    // Profile Pedagang
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    Route::get('/notifikasi', [PedagangNotificationController::class, 'index'])->name('notifikasi');
-
-    Route::get('/statistik', [StatisticsController::class, 'index'])->name('statistik');
 });

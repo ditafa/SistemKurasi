@@ -49,6 +49,7 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
+    'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
     'auth' => \App\Http\Middleware\Authenticate::class,
     'admin' => \App\Http\Middleware\AdminMiddleware::class,
     'pedagang' => \App\Http\Middleware\PedagangMiddleware::class,

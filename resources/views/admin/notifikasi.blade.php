@@ -68,40 +68,52 @@
         </nav>
       </div>
 
-      <!-- Konten Utama -->
-      <div class="flex-1 flex flex-col min-h-screen md:ml-64">
-        <!-- Header mobile -->
-        <header class="md:hidden flex justify-between items-center px-4 py-3 bg-white shadow z-10">
-          <button @click="sidebarOpen = true" class="text-2xl text-[#14532D]">☰</button>
-          <span class="font-bold text-[#14532D]">Dashboard Admin</span>
-        </header>
+      <!-- Main Content -->
+      <main class="flex-1 md:ml-64 p-6">
+        <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
+          <h1 class="text-2xl font-bold mb-6">Notifikasi Kurasi Produk</h1>
 
-        <main class="p-6 flex-1 mb-20">
-          <header class="max-w-4xl mb-12 text-center mx-auto">
-            <h1 class="text-4xl font-extrabold text-[#4a8a4a] leading-tight mb-2">DASHBOARD ADMIN</h1>
-            <p class="text-sm text-gray-600 max-w-lg mx-auto">
-              Admin dapat mengkurasi produk serta mencatat riwayat perubahan status secara transparan.
-            </p>
-          </header>
+          <form method="POST" action="{{ route('admin.notifikasi.markAllAsRead') }}">
+            @csrf
+            <button type="submit" class="mb-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+              Tandai Semua Sudah Dibaca
+            </button>
+          </form>
 
-          <section class="max-w-4xl border border-[#4a8a4a] rounded-xl p-6 bg-[#e6f0db] shadow-sm w-full mx-auto">
-            <h2 class="font-bold text-lg text-[#5a5a5a] mb-6 text-center">Dashboard</h2>
-            <article class="bg-[#f0f7e9] border border-[#a3c0d1] rounded-xl p-10 shadow-md text-center text-[#5a5a5a] text-base space-y-10 mx-auto max-w-xl">
-              <p class="text-lg font-normal">Selamat Datang, Admin!</p>
-              <p class="mx-auto max-w-md">
-                Anda dapat memantau, meninjau, dan mengelola seluruh produk yang diajukan oleh para pedagang melalui sistem kurasi ini.
-              </p>
-              <p class="text-lg font-normal">Pilih Menu Sidebar</p>
-            </article>
-          </section>
-        </main>
+          <ul class="space-y-4">
+            @forelse ($notifikasis as $notifikasi)
+              <li class="p-4 border rounded @if(!$notifikasi->read_at) bg-yellow-100 @else bg-gray-100 @endif">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <p class="text-sm text-gray-800">{{ $notifikasi->data['message'] ?? 'Notifikasi tanpa pesan.' }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ $notifikasi->created_at->diffForHumans() }}</p>
+                  </div>
+                  @if (!$notifikasi->read_at)
+                    <form method="POST" action="{{ route('admin.notifikasi.markAsRead', $notifikasi->id) }}">
+                      @csrf
+                      @method('PATCH')
+                      <button class="text-sm text-blue-600 hover:underline">Tandai Dibaca</button>
+                    </form>
+                  @endif
+                </div>
+              </li>
+            @empty
+              <p class="text-gray-600">Belum ada notifikasi.</p>
+            @endforelse
+          </ul>
 
-        <!-- Footer -->
-      <footer class="bg-[#14532D] text-white py-4 text-center mt-auto">
-        <p class="text-sm">&copy; {{ date('Y') }} Pemerintahan Kabupaten Bantul. All rights reserved.</p>
-      </footer>
-      </div>
+          <div class="mt-6">
+            {{ $notifikasis->links() }}
+          </div>
+        </div>
+      </main>
+
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#14532D] text-white text-sm py-4 text-center">
+      <p>© 2025 Kurasi Bantul. Semua hak dilindungi.</p>
+    </footer>
 
   </body>
 </html>

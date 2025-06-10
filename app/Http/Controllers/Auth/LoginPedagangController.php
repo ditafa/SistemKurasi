@@ -14,30 +14,35 @@ class LoginPedagangController extends Controller
         return view('pedagang.login');
     }
 
-public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+    public function login(Request $request)
+{
+    $request->validate([
+        'email'    => 'required|email',
+        'password' => 'required|string',
+    ]);
 
-        $credentials = $request->only('email', 'password');
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::guard('pedagang')->attempt($credentials)) {
-            // Login berhasil, redirect ke dashboard pedagang
-            return redirect()->intended(route('pedagang.dashboard'));
-        }
-
-        // Login gagal
-        return back()->withErrors(['email' => 'Email atau password salah'])
-                     ->withInput($request->only('email'));
+    if (Auth::guard('pedagang')->attempt($credentials)) {
+        return redirect()->route('pedagang.dashboard'); // Ganti di sini
     }
+
+        Log::warning('Login pedagang gagal', ['email' => $request->email]);
+
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->withInput($request->only('email'));
+}
+
 
     public function logout(Request $request)
     {
         Auth::guard('pedagang')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('pedagang.login');
     }
 }

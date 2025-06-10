@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tentang Kami - Kurasi Bantul</title>
+  <title>Kontak - Kurasi Bantul</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="//unpkg.com/alpinejs" defer></script>
 </head>
@@ -18,8 +18,8 @@
 
         <nav class="flex flex-col space-y-4 text-sm font-medium">
           <a href="/" class="hover:text-green-200">Beranda</a>
-          <a href="/about" class="hover:text-green-200 font-semibold">Tentang Kami</a>
-          <a href="/kontak" class="hover:text-green-200">Kontak</a>
+          <a href="/about" class="hover:text-green-200">Tentang Kami</a>
+          <a href="/kontak" class="hover:text-green-200 font-semibold">Kontak</a>
           <div class="mt-6 border-t border-white/20 pt-4">
             <p class="text-xs mb-2">Masuk Sebagai:</p>
             <a href="/login-admin" class="block hover:text-green-200">Admin</a>
@@ -43,8 +43,8 @@
       </div>
       <nav class="flex flex-col space-y-4 text-sm font-medium">
         <a href="/" class="hover:text-green-200">Beranda</a>
-        <a href="/about" class="hover:text-green-200 font-semibold">Tentang Kami</a>
-        <a href="/kontak" class="hover:text-green-200">Kontak</a>
+        <a href="/about" class="hover:text-green-200">Tentang Kami</a>
+        <a href="/kontak" class="hover:text-green-200 font-semibold">Kontak</a>
         <div class="mt-4 border-t border-white/20 pt-4">
           <p class="text-xs mb-2">Masuk Sebagai:</p>
           <a href="/login-admin" class="block hover:text-green-200">Admin</a>
@@ -64,24 +64,63 @@
 
       <!-- Konten -->
       <main class="flex-grow p-8 max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-[#14532D] mb-4">Tentang Kami</h1>
-        <p class="text-gray-700 mb-4 leading-relaxed">
-          Kurasi Bantul adalah platform digital yang bertujuan untuk membantu pelaku UMKM lokal di Kabupaten Bantul
-          dalam memasarkan produk-produk unggulan mereka melalui proses kurasi yang adil, transparan, dan terstandarisasi.
+        <h1 class="text-3xl font-bold text-[#14532D] mb-6">Hubungi Kami</h1>
+
+        <p class="mb-4 text-gray-700 leading-relaxed">
+          Jika Anda memiliki pertanyaan, saran, atau ingin bekerja sama dengan Kurasi Bantul, jangan ragu untuk menghubungi kami melalui informasi berikut:
         </p>
-        <p class="text-gray-700 mb-4 leading-relaxed">
-          Kami bekerja sama dengan Dinas Komunikasi dan Informatika Kabupaten Bantul untuk memberikan ruang promosi
-          serta dukungan teknis dan digitalisasi kepada para pedagang agar siap bersaing di era industri 4.0.
-        </p>
-        <p class="text-gray-700 mb-4 leading-relaxed">
-          Dengan semangat gotong royong, kami berharap Kurasi Bantul menjadi jembatan antara UMKM dan masyarakat luas
-          dalam mengapresiasi karya lokal berkualitas tinggi.
-        </p>
+
+        <div class="space-y-4 text-gray-800">
+          <p><strong>Email:</strong> diskominfo@bantulkab.go.id</p>
+          <p><strong>Telepon:</strong> (0274) 367174</p>
+          <p><strong>Alamat:</strong> Jl. Jenderal Sudirman No.1, Bantul, Yogyakarta</p>
+        </div>
+
+        <div class="mt-8">
+          <h2 class="text-xl font-semibold text-[#14532D] mb-2">Atau kirim pesan langsung:</h2>
+
+          {{-- Form kontak --}}
+          <form action="{{ route('kontak.store') }}" method="POST" class="space-y-4">
+            @csrf
+
+            <input type="text" name="nama" placeholder="Nama Anda" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
+              value="{{ old('nama') }}">
+            
+            <input type="email" name="email" placeholder="Email Anda" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
+              value="{{ old('email') }}">
+            
+            <textarea name="pesan" rows="4" placeholder="Pesan Anda" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">{{ old('pesan') }}</textarea>
+
+            <button type="submit" class="bg-[#14532D] text-white px-6 py-2 rounded-lg hover:bg-[#0f3b1a] transition">
+              Kirim
+            </button>
+          </form>
+
+          {{-- Pesan sukses --}}
+          @if(session('success'))
+            <p class="mt-4 text-green-600">{{ session('success') }}</p>
+          @endif
+
+          {{-- Tampilkan error validasi --}}
+          @if($errors->any())
+            <div class="mt-4 text-red-600">
+              <ul>
+                @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
+          
+        </div>
       </main>
 
       <!-- Footer -->
-      <footer class="bg-[#14532D] text-white py-4 text-center mt-auto">
-        <p class="text-sm">&copy; {{ date('Y') }} Pemerintahan Kabupaten Bantul. All rights reserved.</p>
+      <footer class="bg-[#14532D] text-white text-sm py-6 text-center">
+        <p>© 2025 Kurasi Bantul. Semua hak dilindungi.</p>
       </footer>
 
     </div>

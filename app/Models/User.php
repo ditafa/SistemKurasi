@@ -11,15 +11,10 @@ class User extends Model
 
     protected $fillable = ['name', 'email', 'password', 'role'];
 
-    // Relasi dengan produk
     public function products()
     {
         return $this->hasMany(Product::class);
     }
 
-    // Relasi dengan status history
-    public function productStatusHistories()
-    {
-        return $this->hasMany(ProductStatusHistory::class);
-    }
+    // relasi lain kalau ada
 }

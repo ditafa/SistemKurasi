@@ -4,37 +4,41 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Pedagang;
+use App\Models\Category;
 use App\Models\ProductPhoto;
+use App\Models\ProductVariation;
+use App\Models\ProductStatusHistory;
+use App\Models\CurationTimeline;
+
 class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'category_id', 'name', 'description', 'price', 'type', 'status'];
+    protected $fillable = [
+        'pedagang_id',
+        'category_id',
+        'name',
+        'description',
+        'price',
+        'type',
+        'status',
+        'gambar',
+        'color',
+        'size',
+    ];
 
-    // Relasi dengan User (Pedagang)
-    //public function user()
-    //{
-    //    return $this->belongsTo(User::class);
-   // }
-
-    public function pedagang()
+        public function user()
     {
-        return $this->belongsTo(User::class, 'user_id'); // Ganti 'user_id' jika nama foreign key berbeda
+        return $this->belongsTo(User::class, 'pedagang_id');
     }
 
-    // Relasi dengan Category
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // Relasi dengan ProductVariation
-    public function variations()
-    {
-        return $this->hasMany(ProductVariation::class);
-    }
-
-    // Relasi dengan ProductPhoto
     public function photos()
     {
         return $this->hasMany(ProductPhoto::class);
@@ -45,20 +49,41 @@ class Product extends Model
         return $this->hasOne(ProductPhoto::class)->oldestOfMany();
     }
 
-    // Relasi dengan ProductStatusHistory
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class);
+    }
+
     public function statusHistories()
     {
         return $this->hasMany(ProductStatusHistory::class);
     }
 
-    // Perbaikan: hanya satu metode untuk latest history
     public function latestHistory()
     {
         return $this->hasOne(ProductStatusHistory::class, 'product_id')->latest();
-        // Hapus baris return kedua yang tidak akan pernah dieksekusi
     }
 
-    // Accessor untuk format status tampilan
+    public function setColorAttribute($value)
+    {
+        $this->attributes['color'] = is_array($value) ? json_encode($value) : $value;
+    }
+
+    public function getColorAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [];
+    }
+
+    public function setSizeAttribute($value)
+    {
+        $this->attributes['size'] = is_array($value) ? json_encode($value) : $value;
+    }
+
+    public function getSizeAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [];
+    }
+
     public function getFormattedStatusAttribute()
     {
         $statusMapping = [
@@ -71,7 +96,6 @@ class Product extends Model
         return $statusMapping[$this->status] ?? $this->status;
     }
 
-    // Accessor untuk mendapatkan kategori utama
     public function getRootCategoryAttribute()
     {
         $category = $this->category;
@@ -80,6 +104,17 @@ class Product extends Model
             $category = $category->parent;
         }
 
-        return $category ?: $this->category; // Jika tidak ada parent, kembalikan kategori saat ini
+        return $category ?: $this->category;
     }
+
+    public function curationTimeline()
+    {
+        return $this->hasMany(CurationTimeline::class, 'product_id');
+    }
+
+    public function latestCuration()
+{
+    return $this->hasOne(CurationTimeline::class, 'product_id')->latestOfMany();
+}
+
 }

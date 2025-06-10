@@ -18,7 +18,7 @@ class Pedagang extends Authenticatable
     ];
 
     protected $hidden = [
-        'password',
+        'password', 'remember_token',
     ];
 }
 

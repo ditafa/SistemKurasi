@@ -22,30 +22,40 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:categories,id',
+            'parent_name' => 'nullable|string|max:255',
         ]);
 
-        Category::create($request->only('name', 'parent_id'));
+        $parentCategory = $this->findOrCreateParent($validated['parent_name'] ?? null);
+
+        Category::create([
+            'name' => $validated['name'],
+            'parent_id' => $parentCategory?->id,
+        ]);
 
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil ditambahkan');
     }
 
     public function edit(Category $kategori)
     {
-        $categories = Category::where('id', '!=', $kategori->id)->get(); // Hindari pilih diri sendiri
+        $categories = Category::where('id', '!=', $kategori->id)->get();
         return view('admin.kategori.edit', compact('kategori', 'categories'));
     }
 
     public function update(Request $request, Category $kategori)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:categories,id',
+            'parent_name' => 'nullable|string|max:255',
         ]);
 
-        $kategori->update($request->only('name', 'parent_id'));
+        $parentCategory = $this->findOrCreateParent($validated['parent_name'] ?? null);
+
+        $kategori->update([
+            'name' => $validated['name'],
+            'parent_id' => $parentCategory?->id,
+        ]);
 
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil diperbarui');
     }
@@ -54,5 +64,20 @@ class CategoryController extends Controller
     {
         $kategori->delete();
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil dihapus');
+    }
+
+    /**
+     * Temukan atau buat kategori induk berdasarkan nama.
+     */
+    private function findOrCreateParent(?string $name): ?Category
+    {
+        if (!$name) {
+            return null;
+        }
+
+        return Category::firstOrCreate(
+            ['name' => $name],
+            ['parent_id' => null]
+        );
     }
 }
