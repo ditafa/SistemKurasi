@@ -101,6 +101,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
 
     // Statistik Admin
     Route::get('/statistik', [StatistikController::class, 'index'])->name('statistik');
+    Route::get('/admin/statistik/export', [\App\Http\Controllers\Admin\StatistikController::class, 'export'])->name('admin.statistik.export');
 
     // Profile Admin
     Route::view('/profile', 'admin.profile')->name('profile');

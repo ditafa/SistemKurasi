@@ -10,14 +10,15 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('curation_timelines', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-    $table->timestamp('curated_at')->nullable();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('curation_timelines', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('product_id')->constrained()->onDelete('cascade');
+        $table->string('status'); // Contoh kolom status
+        $table->timestamps();
+    });
+}
+
 
     /**
      * Reverse the migrations.
@@ -27,3 +28,4 @@ return new class extends Migration
         Schema::dropIfExists('curation_timelines');
     }
 };
+   

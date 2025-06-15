@@ -16,14 +16,13 @@
           <img
             src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png"
             alt="Logo"
-            class="h-12"
-          />
+            class="h-12"/>
         </div>
         <nav class="flex flex-col space-y-4 text-sm font-medium">
           <a href="/" class="hover:text-green-200">Beranda</a>
           <a href="/about" class="hover:text-green-200">Tentang Kami</a>
           <a href="/kontak" class="hover:text-green-200">Kontak</a>
-          <hr class="border-white/40 my-6" />
+          <hr class="border-white/40 my-6"/>
           <div class="space-y-3">
             <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Dashboard</a>
             <a href="{{ route('admin.products.index') }}" class="block px-3 py-2 rounded-md hover:bg-white/10 transition">Daftar Produk</a>
@@ -43,9 +42,7 @@
     <main class="flex-1 p-6 md:ml-64 flex flex-col items-center justify-start min-h-screen">
       <header class="max-w-4xl mb-8 text-center w-full">
         <h1 class="text-4xl font-extrabold text-[#4a8a4a] leading-tight mb-2">STATISTIKA PRODUK</h1>
-        <p class="text-sm text-gray-600 max-w-lg mx-auto">
-          Statistik ini menyajikan data yang telah terkurasi secara bulanan, memberikan gambaran yang lebih jelas tentang kinerja produk.
-        </p>
+        <p class="text-sm text-gray-600 max-w-lg mx-auto">Statistik ini menyajikan data yang telah terkurasi secara bulanan, memberikan gambaran yang lebih jelas tentang kinerja produk.</p>
       </header>
 
       <section class="max-w-4xl border border-[#4a8a4a] rounded-xl p-6 bg-[#e6f0db] shadow-sm w-full">
@@ -90,7 +87,7 @@
               @forelse ($produkPedagang as $produk)
                 <tr class="hover:bg-green-50">
                   <td class="border border-gray-300 px-4 py-2">{{ $produk->nama_produk }}</td>
-                  <td class="border border-gray-300 px-4 py-2">{{ $produk->kategori->nama_kategori ?? '-' }}</td>
+                  <td class="border border-gray-300 px-4 py-2">{{ $produk->category->name ?? '-' }}</td>
                   <td class="border border-gray-300 px-4 py-2 text-center">
                     @if ($produk->status_kurasi == 'diterima')
                       <span class="text-green-600 font-semibold">Diterima</span>
@@ -114,7 +111,6 @@
         </div>
       </section>
     </main>
-
     <!-- Footer -->
     <footer class="bg-[#14532D] text-white text-sm py-6 text-center mt-auto md:ml-64">
       <p>© 2025 Kurasi Bantul. Semua hak dilindungi.</p>

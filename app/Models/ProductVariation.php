@@ -9,13 +9,14 @@ class ProductVariation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'name', 'price'];
+protected $fillable = ['product_id', 'attributes', 'price', 'stock'];
 
     // Relasi dengan Product
     public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
+{
+    return $this->belongsTo(Product::class);
+}
+
 
     // Relasi dengan ProductPhoto
     public function photos()

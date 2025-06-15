@@ -16,120 +16,16 @@ class ProductVariationsTableSeeder extends Seeder
         DB::table('product_variations')->truncate();
 
         DB::table('product_variations')->insert([
-            // Kemeja Pria Premium (id: 1-4)
             [
                 'id' => 1,
                 'product_id' => 1,
-                'name' => 'Size M',
-                'price' => 200000.00,
+                'attributes' => json_encode([
+                    'name' => 'Size M'
+                ]),
+                'price' => 200000,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ],
-            [
-                'id' => 2,
-                'product_id' => 1,
-                'name' => 'Size L',
-                'price' => 300000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 3,
-                'product_id' => 1,
-                'name' => 'Size M',
-                'price' => 250000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 4,
-                'product_id' => 1,
-                'name' => 'Size L',
-                'price' => 275000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-
-            // Kemeja Wanita Elegant (id: 5-6)
-            [
-                'id' => 5,
-                'product_id' => 2,
-                'name' => 'Size L',
-                'price' => 150000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 6,
-                'product_id' => 2,
-                'name' => 'Size M',
-                'price' => 175000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-
-            // Kaos Jogja Heritage (id: 7-8)
-            [
-                'id' => 7,
-                'product_id' => 3,
-                'name' => 'Hitam - Motif 1',
-                'price' => 50000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 8,
-                'product_id' => 3,
-                'name' => 'Putih - Motif 2',
-                'price' => 70000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-
-            // Sepatu Jogja Handmade (id: 9-11)
-            [
-                'id' => 9,
-                'product_id' => 4,
-                'name' => 'Merah',
-                'price' => 400000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 10,
-                'product_id' => 4,
-                'name' => 'Biru',
-                'price' => 420000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 11,
-                'product_id' => 4,
-                'name' => 'Hitam',
-                'price' => 350000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-
-            // Makanan Madu
-            /*
-            [
-                'id' => 12,
-                'product_id' => 5,
-                'name' => 'Madu Hutan',
-                'price' => 150000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 13,
-                'product_id' => 5,
-                'name' => 'Madu Lokal',
-                'price' => 150000.00,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            ],*/
         ]);
     }
 }

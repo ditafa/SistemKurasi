@@ -1,431 +1,224 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tambah Produk - Kurasi Bantul</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js CDN -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  </head>
-  <!-- Body flex-col dan min-h-screen untuk sticky footer -->
-  <body class="bg-[#F8FFF9] text-gray-700 font-sans flex flex-col min-h-screen">
+<html lang="id" x-data="produkForm()" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tambah Produk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+<body class="bg-[#F8FFF9] text-gray-700 font-sans min-h-screen flex flex-col">
+  <div class="flex flex-1">
 
-    <!-- Sidebar (desktop) -->
-    <aside
-      class="hidden md:flex md:flex-col md:justify-between md:w-64 md:h-screen fixed bg-[#14532D] text-white p-6 z-40"
-    >
-      <div>
-        <!-- Logo -->
-        <div class="flex items-center justify-between mb-10">
-          <img
-            src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png"
-            alt="Logo"
-            class="h-11"
-          />
-        </div>
-
-        <!-- Navigasi -->
-        <nav class="flex flex-col space-y-4 text-sm font-medium">
-          <a href="/" class="hover:text-green-200">Beranda</a>
-          <a href="/about" class="hover:text-green-200">Tentang Kami</a>
-          <a href="/kontak" class="hover:text-green-200">Kontak</a>
-          <hr class="border-white/40 my-6" />
-          <div class="space-y-3">
-            <a
-              href="{{ route('pedagang.dashboard') }}"
-              class="block px-3 py-2 rounded-md hover:bg-white/10 transition"
-              >Dashboard</a
-            >
-            <a
-              href="{{ route('pedagang.produk.index') }}"
-              class="block px-3 py-2 rounded-md hover:bg-white/10 transition"
-              >Daftar Produk</a
-            >
-            <a
-              href="{{ route('pedagang.notifikasi') }}"
-              class="block px-3 py-2 rounded-md hover:bg-white/10 transition"
-              >Notifikasi</a
-            >
-            <form action="{{ route('pedagang.logout') }}" method="POST">
-              @csrf
-              <button
-                type="submit"
-                class="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition"
-              >
-                Logout
-              </button>
-            </form>
-          </div>
-        </nav>
-      </div>
+    <!-- SIDEBAR -->
+    <aside class="hidden md:flex md:flex-col md:w-64 fixed h-screen bg-[#14532D] text-white p-6 z-10">
+      <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo" class="h-12 mb-8">
+      <nav class="flex flex-col gap-2 text-sm">
+        <a href="/" class="hover:text-green-200">Beranda</a>
+        <a href="/about" class="hover:text-green-200">Tentang Kami</a>
+        <a href="/kontak" class="hover:text-green-200">Kontak</a>
+        <hr class="border-white/30 my-4">
+        <a href="{{ route('pedagang.dashboard') }}" class="hover:text-green-200">Dashboard</a>
+        <a href="{{ route('pedagang.produk.index') }}" class="hover:text-green-200">Daftar Produk</a>
+        <a href="{{ route('pedagang.notifikasi') }}" class="hover:text-green-200">Notifikasi</a>
+        <a href="{{ route('pedagang.statistik') }}" class="hover:text-green-200">Statistik</a>
+        <form action="{{ route('pedagang.logout') }}" method="POST">@csrf
+          <button type="submit" class="text-left hover:text-green-200">Logout</button>
+        </form>
+      </nav>
     </aside>
 
-    <!-- Main Content -->
-    <!-- Ganti flex-1 jadi flex-grow supaya footer bisa nempel bawah -->
-    <main class="flex-grow p-6 md:ml-64 flex flex-col items-center w-full">
-      <header class="max-w-4xl mb-6 w-full">
-        <h1 class="text-3xl font-extrabold text-[#4a8a4a] mb-2">Tambah Produk</h1>
-        <p class="text-sm text-gray-600">
-          Lengkapi data produk sebelum mengirim kurasi.
-        </p>
-      </header>
+    <!-- FORM -->
+    <main class="flex-1 ml-0 md:ml-64 p-6 bg-gray-100 min-h-screen">
+      <div class="max-w-4xl mx-auto bg-white p-8 rounded shadow">
+        <h1 class="text-2xl font-bold mb-6">Tambah Produk</h1>
 
-      <!-- Alert -->
-      @if (session('success'))
-      <div class="bg-green-100 text-green-800 p-3 rounded mb-4 w-full max-w-4xl">
-        {{ session('success') }}
-      </div>
-      @endif
+        <form method="POST" action="{{ route('pedagang.produk.store') }}" enctype="multipart/form-data">
+            @csrf
 
-      @if ($errors->any())
-      <div class="bg-red-100 text-red-700 p-3 rounded mb-4 w-full max-w-4xl">
-        <ul class="list-disc pl-5 text-sm">
-          @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </div>
-      @endif
+            @if ($errors->any())
+            <div class="mb-4 bg-red-100 text-red-700 p-4 rounded">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
-      <!-- Form -->
-      <section
-        class="bg-[#f0f7e9] border border-[#a3c0d1] p-6 rounded-xl shadow-sm max-w-4xl w-full"
-        x-data="productForm()"
-        x-init="init()"
-      >
-        <form
-          method="POST"
-          action="{{ route('pedagang.produk.store') }}"
-          enctype="multipart/form-data"
-          class="space-y-5"
-          @submit.prevent="submitForm()"
-        >
-          @csrf
-
-          <!-- Gambar Produk -->
-          <div>
-            <label class="block text-sm font-semibold mb-1"
-              >Foto Produk (max 3 gambar)</label
-            >
-            <input
-              type="file"
-              name="gambar[]"
-              accept="image/*"
-              multiple
-              @change="handleFiles"
-              class="w-full border rounded p-2"
-            />
-
-            <template x-if="previews.length">
-              <div class="mt-3 flex gap-3">
-                <template x-for="(src, index) in previews" :key="index">
-                  <div class="relative w-20 h-20 border rounded overflow-hidden">
-                    <img
-                      :src="src"
-                      alt="Preview"
-                      class="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      @click="removeImage(index)"
-                      class="absolute top-0 right-0 bg-red-600 text-white rounded-bl px-1"
-                    >
-                      ×
-                    </button>
+            <div class="flex flex-col md:flex-row gap-6">
+              <div class="md:w-1/3">
+                  <label class="block font-semibold mb-2">Foto Produk (maks. 3)</label>
+                  <input type="file" name="gambar[]" multiple accept="image/*" class="border rounded w-full p-2" @change="handlePreview($event)">
+                  <div class="mt-3 grid grid-cols-3 gap-2" x-show="previewImages.length > 0">
+                      <template x-for="(img, index) in previewImages" :key="index">
+                          <div class="relative">
+                              <!-- Tampilkan gambar -->
+                              <img :src="img" class="w-full h-28 object-cover rounded border">
+                              <!-- Tombol Hapus -->
+                              <button @click="removeImage(index)" class="absolute top-1 right-1 text-white bg-red-500 rounded-full p-1 text-xs hover:bg-red-700">X</button>
+                          </div>
+                      </template>
                   </div>
-                </template>
               </div>
-            </template>
-            <p
-              x-show="errorMsg"
-              x-text="errorMsg"
-              class="text-red-600 text-sm mt-1"
-            ></p>
-          </div>
 
-          <!-- Nama Produk -->
-          <div>
-            <label class="block text-sm font-semibold mb-1">Nama Produk</label>
-            <input
-              type="text"
-              name="name"
-              value="{{ old('name') }}"
-              required
-              class="w-full border rounded p-2"
-            />
-          </div>
-
-          <!-- Kategori -->
-          <div>
-            <label class="block text-sm font-semibold mb-1">Kategori</label>
-            <select
-              name="category_id"
-              required
-              class="w-full border rounded p-2"
-            >
-              <option value="" disabled {{ old('category_id') ? '' : 'selected' }}
-                >-- Pilih Kategori --</option
-              >
-              @foreach ($categories as $category)
-              <option
-                value="{{ $category->id }}"
-                {{ old('category_id') == $category->id ? 'selected' : '' }}
-              >
-                {{ $category->name }}
-              </option>
-              @endforeach
-            </select>
-          </div>
-
-          <!-- Deskripsi -->
-          <div>
-            <label class="block text-sm font-semibold mb-1">Deskripsi</label>
-            <textarea
-              name="description"
-              rows="4"
-              class="w-full border rounded p-2"
-            >{{ old('description') }}</textarea>
-          </div>
-
-          <!-- Jenis Produk -->
-          <div>
-            <label class="block text-sm font-semibold mb-1">Jenis Produk</label>
-            <div class="flex gap-4">
-              <label class="inline-flex items-center">
-                <input
-                  type="radio"
-                  value="single"
-                  name="type"
-                  x-model="type"
-                  class="form-radio"
-                />
-                <span class="ml-2">Single</span>
-              </label>
-              <label class="inline-flex items-center">
-                <input
-                  type="radio"
-                  value="variation"
-                  name="type"
-                  x-model="type"
-                  class="form-radio"
-                />
-                <span class="ml-2">Variation</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Warna & Ukuran -->
-          <div x-show="type === 'variation'" x-transition class="mt-3 space-y-4">
-            <div>
-              <label class="block text-sm font-semibold mb-1">Warna</label>
-              <div class="flex flex-wrap gap-4">
-                <template
-                  x-for="warna in ['merah', 'biru', 'hijau', 'kuning', 'hitam', 'putih']"
-                  :key="warna"
-                >
-                  <label class="inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :value="warna"
-                      name="color[]"
-                      class="form-checkbox"
-                      x-model="selectedColors"
-                    />
-                    <span
-                      class="ml-2"
-                      x-text="warna.charAt(0).toUpperCase() + warna.slice(1)"
-                    ></span>
-                  </label>
-                </template>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-semibold mb-1">Ukuran Size</label>
-              <div class="flex flex-wrap gap-4">
-                <template x-for="ukuran in ['S', 'M', 'L', 'XL', 'XXL']" :key="ukuran">
-                  <label class="inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :value="ukuran"
-                      name="size[]"
-                      class="form-checkbox"
-                      x-model="selectedSizes"
-                    />
-                    <span class="ml-2" x-text="ukuran"></span>
-                  </label>
-                </template>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-semibold mb-1">Ukuran Berat</label>
-              <div class="flex flex-wrap gap-4">
-                <template x-for="ukuran in ['Gram', 'Ons', 'Liter', 'Ml']" :key="ukuran">
-                  <label class="inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :value="ukuran"
-                      name="size[]"
-                      class="form-checkbox"
-                      x-model="selectedSizes"
-                    />
-                    <span class="ml-2" x-text="ukuran"></span>
-                  </label>
-                </template>
-              </div>
-            </div>
-
-            <!-- Harga per Variasi -->
-            <div
-              x-show="selectedColors.length && selectedSizes.length"
-              class="mt-4 border-t pt-4"
-            >
-              <h3 class="font-semibold mb-2">Harga per Variasi</h3>
-              <template x-for="color in selectedColors" :key="color">
-                <div class="mb-4">
-                  <h4 class="font-medium mb-1" x-text="color.charAt(0).toUpperCase() + color.slice(1)"></h4>
-                  <template x-for="size in selectedSizes" :key="size">
-                    <div class="flex items-center mb-2 gap-2">
-                      <label class="w-12" x-text="size"></label>
-                      <input
-                        type="number"
-                        :name="`price_variation[${color}][${size}]`"
-                        min="0"
-                        placeholder="Harga (Rp)"
-                        class="border rounded p-1 w-32"
-                        required
-                      />
+                <div class="md:w-2/3 space-y-4">
+                    <div>
+                        <label class="block font-semibold mb-1">Nama Produk</label>
+                        <input type="text" name="name" class="border rounded w-full p-2" required>
                     </div>
-                  </template>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Kategori</label>
+                        <select name="category_id" class="w-full px-4 py-2 border rounded bg-white" required>
+                            <option value="">Pilih Kategori</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @foreach($category->children as $child)
+                                    <option value="{{ $child->id }}">{{ $category->name }} > {{ $child->name }}</option>
+                                    @foreach($child->children as $sub)
+                                        <option value="{{ $sub->id }}">{{ $category->name }} > {{ $child->name }} > {{ $sub->name }}</option>
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Deskripsi</label>
+                        <textarea name="description" rows="3" class="border rounded w-full p-2" required></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Jenis Produk</label>
+                        <label class="mr-4">
+                            <input type="radio" value="single" name="type" x-model="jenis" class="mr-1"> Single
+                        </label>
+                        <label>
+                            <input type="radio" value="variation" name="type" x-model="jenis" class="mr-1"> Variation
+                        </label>
+                    </div>
+
+                    <div x-show="jenis === 'single'">
+                        <label class="block font-semibold mb-1">Harga (Rp)</label>
+                        <input type="number" name="price" class="border rounded w-full p-2">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1 mt-2">Status Produk</label>
+                        <select name="status" class="border rounded w-full p-2" required>
+                            <option value="diajukan">Diajukan</option>
+                            <option value="diterima">Diterima</option>
+                            <option value="ditolak">Ditolak</option>
+                            <option value="revisi">Revisi</option>
+                        </select>
+                    </div>
                 </div>
-              </template>
             </div>
-          </div>
 
-          <!-- Harga untuk Single -->
-          <div x-show="type === 'single'" class="mt-3">
-            <label class="block text-sm font-semibold mb-1">Harga (Rp)</label>
-            <input
-              type="number"
-              name="price"
-              value="{{ old('price') }}"
-              min="0"
-              required
-              class="w-full border rounded p-2"
-            />
-          </div>
+            <!-- Variasi Produk -->
+            <div x-show="jenis === 'variation'" class="mt-6 border-t pt-6">
+                <h2 class="text-lg font-semibold mb-4">Variasi Produk</h2>
 
-          <!-- Status (Hidden) -->
-          <input type="hidden" name="status" value="diajukan" />
+                <template x-for="(options, label) in attributeOptions" :key="label">
+                    <div class="mb-4">
+                        <label class="block font-semibold mb-1" x-text="label"></label>
+                        <select multiple class="w-full border rounded p-2"
+                            @change="selectedValues[label] = Array.from($event.target.selectedOptions).map(o => o.value); generateCombinations();">
+                            <template x-for="option in options" :key="option">
+                                <option :value="option" x-text="option"></option>
+                            </template>
+                        </select>
+                    </div>
+                </template>
 
-          <!-- Tombol Simpan -->
-          <div class="text-right">
-            <button
-              type="submit"
-              class="bg-[#4a8a4a] hover:bg-green-700 text-white px-6 py-2 rounded font-semibold"
-            >
-              Simpan Produk
-            </button>
-          </div>
+                <div x-show="kombinasi.length > 0" class="mt-6">
+                    <h3 class="text-md font-bold mb-2">Kombinasi Variasi</h3>
+                    <table class="w-full border text-sm text-left">
+                        <thead>
+                            <tr class="bg-gray-200 text-gray-700">
+                                <th class="p-2 border">Kombinasi</th>
+                                <th class="p-2 border">Harga (Rp)</th>
+                                <th class="p-2 border">Stok</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in kombinasi" :key="index">
+                                <tr>
+                                    <td class="p-2 border" x-text="item.label"></td>
+                                    <td class="p-2 border">
+                                        <input type="number" :name="'kombinasi[' + index + '][price]'" class="w-full border p-1 rounded" required>
+                                    </td>
+                                    <td class="p-2 border">
+                                        <input type="number" :name="'kombinasi[' + index + '][stock]'" class="w-full border p-1 rounded" required>
+                                    </td>
+                                    <input type="hidden" :name="'kombinasi[' + index + '][label]'" :value="item.label">
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-right mt-6">
+                <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800">
+                    Simpan Produk
+                </button>
+            </div>
         </form>
-      </section>
+      </div>
     </main>
+  </div>
 
-    <!-- Footer -->
-    <!-- Tambahkan w-full dan mt-auto supaya footer full width dan nempel bawah -->
-    <footer class="bg-[#14532D] text-white text-sm py-6 text-center w-full mt-auto">
-      <p>© 2025 Kurasi Bantul. Semua hak dilindungi.</p>
-    </footer>
-
-    <!-- Alpine.js Logic -->
-    <script>
-      function productForm() {
-        return {
-          type: @json(old("type", "single")),
-          previews: [],
-          errorMsg: "",
-
-          selectedColors: [],
-          selectedSizes: [],
-
-          init() {
-            // load old input jika ada (Laravel)
-            this.selectedColors = @json(old("color", []));
-            this.selectedSizes = @json(old("size", []));
-          },
-
-          handleFiles(event) {
-            this.errorMsg = "";
-            const files = Array.from(event.target.files);
-            if (files.length > 3) {
-              this.errorMsg = "Maksimal upload 3 gambar saja.";
-              event.target.value = "";
-              this.previews = [];
-              return;
-            }
-            this.previews = [];
-            files.forEach((file) => {
-              if (!file.type.startsWith("image/")) return;
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                this.previews.push(e.target.result);
-              };
-              reader.readAsDataURL(file);
-            });
-          },
-
-          removeImage(index) {
-            this.previews.splice(index, 1);
-          },
-
-          submitForm() {
-            this.errorMsg = "";
-
-            if (this.previews.length === 0) {
-              this.errorMsg = "Harap upload minimal 1 foto produk.";
-              return;
-            }
-            if (this.previews.length > 3) {
-              this.errorMsg = "Maksimal upload 3 gambar saja.";
-              return;
-            }
-
-            if (this.type === "variation") {
-              if (this.selectedColors.length === 0) {
-                this.errorMsg = "Harap pilih minimal 1 warna.";
-                return;
-              }
-              if (this.selectedSizes.length === 0) {
-                this.errorMsg = "Harap pilih minimal 1 ukuran.";
-                return;
-              }
-
-              // Validasi harga variasi harus terisi semua
-              let valid = true;
-              const form = this.$root.querySelector("form");
-              this.selectedColors.forEach((color) => {
-                this.selectedSizes.forEach((size) => {
-                  const inputName = `price_variation[${color}][${size}]`;
-                  const input = form.querySelector(`[name="${inputName}"]`);
-                  if (!input || !input.value || Number(input.value) < 0) {
-                    valid = false;
-                  }
-                });
-              });
-              if (!valid) {
-                this.errorMsg =
-                  "Harap isi harga untuk semua variasi warna dan ukuran.";
-                return;
-              }
-            }
-
-            this.$root.querySelector("form").submit();
-          },
-        };
+  <script>
+  function produkForm() {
+    return {
+      jenis: 'single',
+      previewImages: [],
+      attributeOptions: {
+        Warna: ['Merah', 'Kuning', 'Biru', 'Hijau', 'Hitam', 'Putih'],
+        'Ukuran Baju': ['S', 'M', 'L', 'XL', 'XXL'],
+        'Ukuran Kaki': ['35','36','37','38','39','40','41','42','43','44','45'],
+        Berat: ['100gr', '250gr', '500gr', '1kg'],
+        Volume: ['250ml', '500ml', '1L'],
+        Rasa: ['Original', 'Keju', 'Cokelat', 'Pedas'],
+      },
+      selectedValues: {},
+      kombinasi: [],
+      handlePreview(event) {
+        this.previewImages = [];
+        const files = event.target.files;
+        if (files.length > 3) {
+          alert("Maksimal 3 gambar yang bisa diunggah.");
+          event.target.value = "";
+          return;
+        }
+        Array.from(files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            this.previewImages.push(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        });
+      },
+      removeImage(index) {
+        this.previewImages.splice(index, 1);  // Remove the image at the selected index
+      },
+      generateCombinations() {
+        const entries = Object.entries(this.selectedValues).filter(([k, v]) => v.length);
+        if (entries.length < 2) {
+          this.kombinasi = [];
+          return;
+        }
+        const cartesian = (arr) => arr.reduce((a, b) => a.flatMap(d => b.map(e => [].concat(d, e))));
+        const result = cartesian(entries.map(([_, v]) => v));
+        this.kombinasi = result.map(combo => {
+          const label = combo.join(' + ');
+          return { label };
+        });
       }
-    </script>
-  </body>
+    };
+  }
+</script>
+</body>
 </html>

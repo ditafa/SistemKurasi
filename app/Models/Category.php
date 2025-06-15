@@ -11,16 +11,18 @@ class Category extends Model
 
     protected $fillable = ['name', 'parent_id'];
 
-    // Relasi kategori dengan kategori induk (Self-referencing)
-    public function parent()
-    {
-        return $this->belongsTo(Category::class, 'parent_id');
-    }
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
-    
+
+    // Untuk mendapatkan induk kategori
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+
     // Relasi kategori dengan produk
     public function products()
     {

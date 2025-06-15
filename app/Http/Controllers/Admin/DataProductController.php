@@ -15,7 +15,7 @@ class DataProductController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['updateStatus', 'getVariation']);
+$this->middleware('auth:admin')->only(['updateStatus', 'getVariation']);
     }
 
     public function index(Request $request)
@@ -66,11 +66,11 @@ class DataProductController extends Controller
             });
         }
 
-        $products = $query->paginate(3);
+$products = $query->paginate(7);
 
         $products->each(function ($product) {
             $product->first_photo = $product->photos->first();
-            $rawStatus = $product->latestHistory->status ?? 'Diajukan';
+$rawStatus = $product->latestHistory->status ?? 'Diajukan';
             $status = $this->formatStatus($rawStatus);
 
             $product->statusColor = match ($status) {
@@ -164,8 +164,9 @@ class DataProductController extends Controller
             $product = Product::with('statusHistories')->findOrFail($id);
 
             $isProcessed = $product->statusHistories->contains(fn($history) =>
-                in_array(strtolower($history->status), ['diterima', 'ditolak'])
-            );
+    in_array(strtolower($history->status), ['diterima', 'ditolak'])
+);
+
 
             if ($isProcessed) {
                 return response()->json([
@@ -275,32 +276,35 @@ class DataProductController extends Controller
     }
 
     public function kurasi(Request $request, $id)
-    {
-        $request->validate([
-            'kurasi_status' => 'required|string|in:diterima,ditolak,diterima dengan revisi',
-            'kurasi_notes' => 'nullable|string',
+{
+    $request->validate([
+        'kurasi_status' => 'required|string|in:diterima,ditolak,diterima dengan revisi',
+        'kurasi_notes' => 'nullable|string',
+    ]);
+
+    try {
+        $product = Product::with('statusHistories')->findOrFail($id);
+        $statusToSave = strtolower($request->kurasi_status);
+
+        // Simpan status baru ke riwayat status
+        $statusHistory = new ProductStatusHistory([
+            'product_id' => $product->id,
+            'admin_id' => Auth::id(),
+            'status' => $statusToSave,
+            'notes' => $request->kurasi_notes ?? '',
+            'created_at' => Carbon::now('Asia/Jakarta'),
         ]);
+        $statusHistory->save();
 
-        try {
-            $product = Product::with('statusHistories')->findOrFail($id);
-            $statusToSave = strtolower($request->kurasi_status);
+        // Update status terakhir produk
+        $product->status = $statusToSave;
+        $product->save();
 
-            $statusHistory = new ProductStatusHistory([
-                'product_id' => $product->id,
-                'admin_id' => Auth::id(),
-                'status' => $statusToSave,
-                'notes' => $request->kurasi_notes ?? '',
-                'created_at' => Carbon::now('Asia/Jakarta'),
-            ]);
-            $statusHistory->save();
-
-            $product->status = $statusToSave;
-            $product->save();
-
-            return redirect()->back()->with('success', 'Produk berhasil dikurasi.');
-        } catch (\Exception $e) {
-            \Log::error('Error in kurasi method: ' . $e->getMessage());
-            return redirect()->back()->withErrors('Terjadi kesalahan saat proses kurasi.');
-        }
+        return redirect()->back()->with('success', 'Produk berhasil dikurasi.');
+    } catch (\Exception $e) {
+        \Log::error('Error in kurasi method: ' . $e->getMessage());
+        return redirect()->back()->withErrors('Terjadi kesalahan saat proses kurasi.');
     }
+}
+
 }

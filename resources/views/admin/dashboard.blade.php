@@ -18,8 +18,7 @@
             <img
               src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png"
               alt="Logo"
-              class="h-12"
-            />
+              class="h-12"/>
           </div>
           <nav class="flex flex-col space-y-4 text-sm font-medium">
             <a href="/" class="hover:text-green-200">Beranda</a>
@@ -45,8 +44,7 @@
       <div class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden" x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity></div>
       <div
         class="fixed inset-y-0 left-0 w-64 bg-[#14532D] text-white p-6 z-40 transform transition-transform duration-300 md:hidden"
-        :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }"
-      >
+        :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
         <div class="flex justify-between items-center mb-6">
           <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo" class="h-10">
           <button class="text-white text-2xl" @click="sidebarOpen = false">×</button>
@@ -79,18 +77,14 @@
         <main class="p-6 flex-1 mb-20">
           <header class="max-w-4xl mb-12 text-center mx-auto">
             <h1 class="text-4xl font-extrabold text-[#4a8a4a] leading-tight mb-2">DASHBOARD ADMIN</h1>
-            <p class="text-sm text-gray-600 max-w-lg mx-auto">
-              Admin dapat mengkurasi produk serta mencatat riwayat perubahan status secara transparan.
-            </p>
+            <p class="text-sm text-gray-600 max-w-lg mx-auto">Admin dapat mengkurasi produk serta mencatat riwayat perubahan status secara transparan.</p>
           </header>
 
           <section class="max-w-4xl border border-[#4a8a4a] rounded-xl p-6 bg-[#e6f0db] shadow-sm w-full mx-auto">
             <h2 class="font-bold text-lg text-[#5a5a5a] mb-6 text-center">Dashboard</h2>
             <article class="bg-[#f0f7e9] border border-[#a3c0d1] rounded-xl p-10 shadow-md text-center text-[#5a5a5a] text-base space-y-10 mx-auto max-w-xl">
               <p class="text-lg font-normal">Selamat Datang, Admin!</p>
-              <p class="mx-auto max-w-md">
-                Anda dapat memantau, meninjau, dan mengelola seluruh produk yang diajukan oleh para pedagang melalui sistem kurasi ini.
-              </p>
+              <p class="mx-auto max-w-md">Anda dapat memantau, meninjau, dan mengelola seluruh produk yang diajukan oleh para pedagang melalui sistem kurasi ini.</p>
               <p class="text-lg font-normal">Pilih Menu Sidebar</p>
             </article>
           </section>

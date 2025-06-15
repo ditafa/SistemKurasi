@@ -5,16 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Detail Produk - Kurasi Bantul</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-[#F8FFF9] text-gray-700 font-sans flex min-h-screen">
-
-  <!-- Sidebar (desktop) -->
   <aside class="hidden md:flex md:flex-col md:justify-between md:w-64 md:h-screen fixed bg-[#14532D] text-white p-6 z-40">
     <div>
-      <!-- Logo -->
       <div class="flex items-center justify-between mb-10">
         <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" alt="Logo" class="h-12" />
       </div>
@@ -41,64 +37,71 @@
   </aside>
 
   <div class="flex-1 ml-64 p-10">
-    <!-- Heading -->
     <h1 class="text-3xl font-bold text-[#388e3c] mb-4">Detail Produk</h1>
 
-    <!-- Produk Detail -->
-    <div class="bg-white p-6 rounded-xl shadow-md">
-      <div class="flex gap-6">
-        <!-- Gambar Produk -->
-        <div>
-          @if($product->firstPhoto)
-            <img src="{{ asset('storage/' . $product->firstPhoto->filepath) }}" alt="{{ $product->name }}" class="w-64 h-64 object-cover rounded-lg" />
-          @else
-            <div class="w-64 h-64 bg-gray-200 flex items-center justify-center text-gray-400 text-xs rounded-lg">No Image</div>
-          @endif
-        </div>
-
-        <!-- Info Produk -->
-        <div class="flex-1">
-          <h2 class="text-2xl font-semibold mb-2">{{ $product->name }}</h2>
-
-          <p class="text-gray-600">Kategori: <span class="font-semibold">{{ $product->category->name ?? 'Tidak ada kategori' }}</span></p>
-
-          <p class="text-gray-600">Harga: <span class="font-semibold">Rp{{ number_format($product->price, 0, ',', '.') }}</span></p>
-
-          <p class="text-gray-600">Status: <span class="font-semibold">{{ ucfirst($product->status) }}</span></p>
-
-          <p class="mt-4 text-gray-700">{{ $product->description }}</p>
-        </div>
+    <div>
+      <div class="border p-2 rounded-lg mb-4">
+        @if ($product->photos && $product->photos->isNotEmpty())
+          <img src="{{ asset('storage/' . $product->photos->first()->path) }}" class="w-full rounded-lg" alt="Foto Produk Utama">
+        @else
+          <img src="{{ asset('img/placeholder.jpg') }}" class="w-full rounded-lg" alt="Tidak ada foto">
+        @endif
       </div>
-    </div>
 
-    <!-- Timeline Kurasi -->
-    <div class="mt-8 bg-white p-6 rounded-xl shadow-md">
-      <h3 class="text-xl font-semibold text-[#388e3c] mb-4">Timeline Kurasi</h3>
-      
-      @if($product->curationTimeline && $product->curationTimeline->count() > 0)
-        <ul class="space-y-4">
-          @foreach ($product->curationTimeline as $timeline)
-            <li class="flex items-center space-x-3">
-              <div class="w-3 h-3 bg-green-600 rounded-full"></div>
-              <div>
-                <p class="text-sm font-semibold">{{ $timeline->status }}</p>
-                <p class="text-gray-500 text-xs">{{ $timeline->created_at->format('d M Y H:i') }}</p>
-                <p class="text-gray-600 text-sm">{{ $timeline->description }}</p>
-              </div>
-            </li>
-          @endforeach
-        </ul>
-      @else
-        <p class="text-gray-600">Tidak ada timeline kurasi untuk produk ini.</p>
+    <!-- Detail Produk -->
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ $product->name }}</h2>
+      <p class="text-sm text-gray-500 mb-4">Kategori: <span class="font-medium">{{ $product->category->name }}</span></p>
+
+      <p class="text-gray-700 mb-4">{{ $product->description }}</p>
+
+      @if($product->type === 'variation')
+        <p class="mb-2"><span class="font-semibold">Warna:</span> {{ implode(', ', $product->color ?? []) }}</p>
+        <p class="mb-2"><span class="font-semibold">Ukuran:</span> {{ implode(', ', $product->size ?? []) }}</p>
       @endif
+
+      <p class="text-xl font-semibold text-gray-800 mt-4 mb-6">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+
+      <!-- Status Kurasi -->
+      <div class="mb-6">
+        <p class="text-sm text-gray-500 mb-2">Status Kurasi:</p>
+        <span class="@if($product->status === 'Diterima') bg-green-100 text-green-700 
+                      @elseif($product->status === 'Revisi') bg-yellow-100 text-yellow-700 
+                      @else bg-red-100 text-red-700 
+                      @endif px-3 py-1 rounded-full text-sm font-medium">
+          {{ $product->status }}
+        </span>
+      </div>
+
+      <!-- Timeline -->
+      <div class="mt-8">
+        <h4 class="font-semibold mb-2">Timeline Status :</h4>
+        @if($product->productStatusHistories && !$product->productStatusHistories->isEmpty())
+          <ul class="text-sm space-y-2">
+            @foreach ($product->productStatusHistories as $history)
+              <li>
+                @if ($history->status === 'diajukan')
+                  Produk diajukan oleh ID Pedagang {{ $product->pedagang_id }} <br>
+                @elseif ($history->status === 'diterima')
+                  Produk disetujui oleh ID Admin {{ $history->admin_id ?? '-' }} <br>
+                @elseif ($history->status === 'ditolak')
+                  Produk ditolak oleh ID Admin {{ $history->admin_id ?? '-' }} <br>
+                @elseif ($history->status === 'revisi')
+                  Produk dikembalikan untuk revisi oleh ID Admin {{ $history->admin_id ?? '-' }} <br>
+                @else
+                  Status: {{ ucfirst($history->status) }} <br>
+                @endif
+                Tanggal: {{ \Carbon\Carbon::parse($history->created_at)->locale('id')->isoFormat('D MMMM Y, HH:mm') }} WIB
+              </li>
+            @endforeach
+          </ul>
+        @else
+          <p class="text-sm text-gray-500">Tidak ada timeline kurasi untuk produk ini.</p>
+        @endif
+      </div>
+
+      <a href="{{ route('pedagang.produk.index') }}" class="inline-block mt-8 text-blue-600 hover:underline">← Kembali ke Daftar Produk</a>
     </div>
-
-    <!-- Tombol Kembali -->
-    <a href="{{ route('pedagang.dataproduk') }}" class="mt-6 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-      Kembali ke Daftar Produk
-    </a>
   </div>
-
 </body>
-
 </html>

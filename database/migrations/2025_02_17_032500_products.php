@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             // migration products
             $table->foreignId('pedagang_id')->constrained('pedagangs')->onDelete('cascade');
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade'); // Relasi dengan categories
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);

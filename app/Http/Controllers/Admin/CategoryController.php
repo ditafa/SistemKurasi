@@ -8,11 +8,12 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
-    {
-        $categories = Category::with('parent')->get();
-        return view('admin.kategori.index', compact('categories'));
-    }
+
+public function index()
+{
+    $categories = Category::with('children')->whereNull('parent_id')->get();
+    return view('admin.kategori.index', compact('categories'));
+}
 
     public function create()
     {

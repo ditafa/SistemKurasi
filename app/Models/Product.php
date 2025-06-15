@@ -34,6 +34,12 @@ class Product extends Model
         return $this->belongsTo(User::class, 'pedagang_id');
     }
 
+    public function variations()
+    {
+        return $this->hasMany(\App\Models\ProductVariation::class);
+    }
+
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -49,15 +55,11 @@ class Product extends Model
         return $this->hasOne(ProductPhoto::class)->oldestOfMany();
     }
 
-    public function variations()
-    {
-        return $this->hasMany(ProductVariation::class);
-    }
-
     public function statusHistories()
     {
         return $this->hasMany(ProductStatusHistory::class);
     }
+
 
     public function latestHistory()
     {
@@ -107,10 +109,11 @@ class Product extends Model
         return $category ?: $this->category;
     }
 
-    public function curationTimeline()
-    {
-        return $this->hasMany(CurationTimeline::class, 'product_id');
-    }
+    public function curationTimelines()
+{
+    return $this->hasMany(\App\Models\CurationTimeline::class);
+}
+
 
     public function latestCuration()
 {

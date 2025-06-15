@@ -13,8 +13,7 @@
           <img
             src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png"
             alt="Logo"
-            class="h-12"
-          />
+            class="h-12"/>
         </div>
 
         <nav class="flex flex-col space-y-4 text-sm font-medium">
@@ -36,24 +35,20 @@
         </nav>
       </div>
     </aside>
+    
     <main class="flex-1 p-6 md:ml-64 flex flex-col items-center justify-center min-h-screen">
       <header class="max-w-4xl mb-12 text-center">
         <h1 class="text-4xl font-extrabold text-[#4a8a4a] leading-tight mb-2">DASHBOARD PEDAGANG</h1>
-        <p class="text-sm text-gray-600 max-w-lg mx-auto">
-          Pedagang dapat mengajukan produk serta mencatat riwayat perubahan status secara transparan.
-        </p>
+        <p class="text-sm text-gray-600 max-w-lg mx-auto">Pedagang dapat mengajukan produk serta mencatat riwayat perubahan status secara transparan.</p>
       </header>
 
       <section class="max-w-4xl border border-[#4a8a4a] rounded-xl p-6 bg-[#e6f0db] shadow-sm w-full">
         <h2 class="font-bold text-lg text-[#5a5a5a] mb-6 text-center">Dashboard</h2>
 
         <article
-          class="bg-[#f0f7e9] border border-[#a3c0d1] rounded-xl p-10 shadow-md text-center text-[#5a5a5a] text-base space-y-10 mx-auto max-w-xl"
-        >
+          class="bg-[#f0f7e9] border border-[#a3c0d1] rounded-xl p-10 shadow-md text-center text-[#5a5a5a] text-base space-y-10 mx-auto max-w-xl">
           <p class="text-lg font-normal">Selamat Datang, Pedagang!</p>
-          <p class="mx-auto max-w-md">
-            Anda dapat memantau, meninjau, dan mengelola seluruh produk yang diajukan oleh para pedagang melalui sistem kurasi ini.
-          </p>
+          <p class="mx-auto max-w-md">Anda dapat memantau, meninjau, dan mengelola seluruh produk yang diajukan oleh para pedagang melalui sistem kurasi ini.</p>
           <p class="text-lg font-normal">Pilih Menu Sidebar</p>
         </article>
       </section>
@@ -63,6 +58,5 @@
     <footer class="bg-[#14532D] text-white text-sm py-6 text-center mt-auto">
       <p>© 2025 Kurasi Bantul. Semua hak dilindungi.</p>
     </footer>
-
   </body>
 </html>

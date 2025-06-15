@@ -18,8 +18,7 @@
         <img
           src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png"
           alt="Logo"
-          class="h-16 mb-8"
-        />
+          class="h-16 mb-8"/>
 
         <nav class="flex flex-col space-y-4 text-sm font-medium">
           <a href="/" class="hover:text-green-200 transition">Beranda</a>
@@ -43,8 +42,7 @@
         <img
           src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png"
           alt="Logo"
-          class="h-10"
-        />
+          class="h-10"/>
         <button @click="sidebarOpen = !sidebarOpen" class="text-2xl font-bold">☰</button>
       </div>
 
@@ -53,13 +51,11 @@
         class="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
         x-show="sidebarOpen"
         x-transition
-        @click="sidebarOpen = false"
-      ></div>
+        @click="sidebarOpen = false"></div>
       <div
         class="fixed inset-y-0 left-0 z-50 w-64 bg-[#14532D] text-white p-6 transform transition-transform duration-300 md:hidden"
         x-show="sidebarOpen"
-        x-transition
-      >
+        x-transition>
         <div class="flex justify-between items-center mb-6">
           <img src="https://diskominfo.bantulkab.go.id/assets/Site/img/logo-font-white.png" class="h-12" />
           <button class="text-white text-2xl font-bold" @click="sidebarOpen = false">×</button>
@@ -92,8 +88,7 @@
                 id="email"
                 required
                 placeholder="Masukkan email"
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"/>
             </div>
 
             <div class="mb-4 text-left">
@@ -104,8 +99,7 @@
                 id="password"
                 required
                 placeholder="Masukkan password"
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"/>
             </div>
 
             @if($errors->any())
@@ -116,8 +110,7 @@
 
             <button
               type="submit"
-              class="w-full bg-[#14532D] text-white py-2 px-4 rounded-full hover:bg-[#0f3b1a] transition duration-200"
-            >
+              class="w-full bg-[#14532D] text-white py-2 px-4 rounded-full hover:bg-[#0f3b1a] transition duration-200">
               Login
             </button>
           </form>

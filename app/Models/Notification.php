@@ -8,26 +8,45 @@ use App\Models\Admin;
 
 class Notification extends Model
 {
-    // Tambahkan ini agar model tahu pakai tabel custom_notifications
+    // Tentukan nama tabel
     protected $table = 'custom_notifications';
 
+    // Field yang dapat diisi
     protected $fillable = [
         'user_id',
-        'role',
+        'role',      // 'admin' atau 'pedagang'
         'title',
         'message',
         'is_read',
     ];
 
+    // Casting ke tipe data
     protected $casts = [
         'is_read' => 'boolean',
     ];
 
-    public function user()
+    /**
+     * Relasi ke model Pedagang.
+     */
+    public function pedagang()
     {
-        return $this->belongsTo(
-            $this->role === 'pedagang' ? Pedagang::class : Admin::class,
-            'user_id'
-        );
+        return $this->belongsTo(Pedagang::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke model Admin.
+     */
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'user_id');
+    }
+
+    /**
+     * Getter dinamis untuk mengakses user sesuai role.
+     * Contoh: $notif->user
+     */
+    public function getUserAttribute()
+    {
+        return $this->role === 'pedagang' ? $this->pedagang : $this->admin;
     }
 }
