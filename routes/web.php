@@ -1,11 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-// =============================
-// Import Controllers
-// =============================
-
 // Auth Controllers
 use App\Http\Controllers\Auth\LoginAdminController;
 use App\Http\Controllers\Auth\LoginPedagangController;
@@ -14,7 +9,6 @@ use App\Http\Controllers\Auth\LoginPedagangController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DataProductController as AdminDataProductController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\Admin\StatistikController;
 
 // Pedagang Controllers
@@ -81,6 +75,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     // Dashboard Admin
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
+
+    // Form input data pendaftar oleh admin
+    Route::get('/pendaftaran/create', [PendaftaranController::class, 'create'])->name('pendaftaran.create');
+    Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
     // Resource route produk admin
     Route::resource('products', AdminDataProductController::class);
 
@@ -90,14 +89,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     // Resource route kategori produk
     Route::resource('kategori', CategoryController::class);
 
-    // Notifikasi Admin
-    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
-
-    // Tandai semua notifikasi sebagai sudah dibaca
-    Route::post('/notifikasi/mark-all-as-read', [NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
-
-    // Tandai satu notifikasi sebagai sudah dibaca
-    Route::patch('/notifikasi/{id}/mark-as-read', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
 
     // Statistik Admin
     Route::get('/statistik', [StatistikController::class, 'index'])->name('statistik');
@@ -124,10 +115,6 @@ Route::prefix('pedagang')->name('pedagang.')->middleware('auth:pedagang')->group
 
     // Aliasing '/dataproduk' ke index produk pedagang
     Route::get('/dataproduk', fn () => redirect()->route('pedagang.produk.index'))->name('dataproduk');
-
-    // Notifikasi Pedagang
-    Route::get('/notifikasi', [PedagangNotificationController::class, 'index'])->name('notifikasi');
-    Route::post('/notifikasi/{id}/baca', [PedagangNotificationController::class, 'markAsRead'])->name('notifikasi.baca');
 
     // Statistik Pedagang
     Route::get('/statistik', [StatisticsController::class, 'index'])->name('statistik');

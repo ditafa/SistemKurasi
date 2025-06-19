@@ -20,7 +20,6 @@
         <hr class="border-white/30 my-4">
         <a href="{{ route('pedagang.dashboard') }}" class="hover:text-green-200">Dashboard</a>
         <a href="{{ route('pedagang.produk.index') }}" class="hover:text-green-200">Daftar Produk</a>
-        <a href="{{ route('pedagang.notifikasi') }}" class="hover:text-green-200">Notifikasi</a>
         <a href="{{ route('pedagang.statistik') }}" class="hover:text-green-200">Statistik</a>
         <form action="{{ route('pedagang.logout') }}" method="POST">@csrf
           <button type="submit" class="text-left hover:text-green-200">Logout</button>
@@ -34,191 +33,191 @@
         <h1 class="text-2xl font-bold mb-6">Tambah Produk</h1>
 
         <form method="POST" action="{{ route('pedagang.produk.store') }}" enctype="multipart/form-data">
-            @csrf
+          @csrf
 
-            @if ($errors->any())
-            <div class="mb-4 bg-red-100 text-red-700 p-4 rounded">
-                <ul class="list-disc pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
+          @if ($errors->any())
+          <div class="mb-4 bg-red-100 text-red-700 p-4 rounded">
+            <ul class="list-disc pl-5">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+          @endif
 
-            <div class="flex flex-col md:flex-row gap-6">
-              <div class="md:w-1/3">
-                  <label class="block font-semibold mb-2">Foto Produk (maks. 3)</label>
-                  <input type="file" name="gambar[]" multiple accept="image/*" class="border rounded w-full p-2" @change="handlePreview($event)">
-                  <div class="mt-3 grid grid-cols-3 gap-2" x-show="previewImages.length > 0">
-                      <template x-for="(img, index) in previewImages" :key="index">
-                          <div class="relative">
-                              <!-- Tampilkan gambar -->
-                              <img :src="img" class="w-full h-28 object-cover rounded border">
-                              <!-- Tombol Hapus -->
-                              <button @click="removeImage(index)" class="absolute top-1 right-1 text-white bg-red-500 rounded-full p-1 text-xs hover:bg-red-700">X</button>
-                          </div>
-                      </template>
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- FOTO -->
+            <div class="md:w-1/3">
+              <label class="block font-semibold mb-2">Foto Produk (maks. 3)</label>
+              <input type="file" name="gambar" accept="image/*" class="border rounded w-full p-2" @change="handlePreview($event)">
+              <div class="mt-3 grid grid-cols-3 gap-2" x-show="previewImages.length > 0">
+                <template x-for="(img, index) in previewImages" :key="index">
+                  <div class="relative">
+                    <img :src="img" class="w-full h-28 object-cover rounded border">
+                    <button @click="removeImage(index)" type="button" class="absolute top-1 right-1 text-white bg-red-500 rounded-full p-1 text-xs hover:bg-red-700">X</button>
                   </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- FORM DATA -->
+            <div class="md:w-2/3 space-y-4">
+              <div>
+                <label class="block font-semibold mb-1">Nama Produk</label>
+                <input type="text" name="name" class="border rounded w-full p-2" required>
               </div>
 
-                <div class="md:w-2/3 space-y-4">
-                    <div>
-                        <label class="block font-semibold mb-1">Nama Produk</label>
-                        <input type="text" name="name" class="border rounded w-full p-2" required>
-                    </div>
+              <div>
+                <label class="block font-semibold mb-1">Kategori</label>
+                <select name="category_id" class="w-full px-4 py-2 border rounded bg-white" required>
+                  <option value="">Pilih Kategori</option>
+                  @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @foreach($category->children as $child)
+                      <option value="{{ $child->id }}">{{ $category->name }} > {{ $child->name }}</option>
+                      @foreach($child->children as $sub)
+                        <option value="{{ $sub->id }}">{{ $category->name }} > {{ $child->name }} > {{ $sub->name }}</option>
+                      @endforeach
+                    @endforeach
+                  @endforeach
+                </select>
+              </div>
 
-                    <div>
-                        <label class="block font-semibold mb-1">Kategori</label>
-                        <select name="category_id" class="w-full px-4 py-2 border rounded bg-white" required>
-                            <option value="">Pilih Kategori</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @foreach($category->children as $child)
-                                    <option value="{{ $child->id }}">{{ $category->name }} > {{ $child->name }}</option>
-                                    @foreach($child->children as $sub)
-                                        <option value="{{ $sub->id }}">{{ $category->name }} > {{ $child->name }} > {{ $sub->name }}</option>
-                                    @endforeach
-                                @endforeach
-                            @endforeach
-                        </select>
-                    </div>
+              <div>
+                <label class="block font-semibold mb-1">Deskripsi</label>
+                <textarea name="description" rows="3" class="border rounded w-full p-2" required></textarea>
+              </div>
 
-                    <div>
-                        <label class="block font-semibold mb-1">Deskripsi</label>
-                        <textarea name="description" rows="3" class="border rounded w-full p-2" required></textarea>
-                    </div>
+              <div>
+                <label class="block font-semibold mb-1">Jenis Produk</label>
+                <label class="mr-4">
+                  <input type="radio" value="single" name="type" x-model="jenis" class="mr-1"> Single
+                </label>
+                <label>
+                  <input type="radio" value="variation" name="type" x-model="jenis" class="mr-1"> Variation
+                </label>
+              </div>
 
-                    <div>
-                        <label class="block font-semibold mb-1">Jenis Produk</label>
-                        <label class="mr-4">
-                            <input type="radio" value="single" name="type" x-model="jenis" class="mr-1"> Single
-                        </label>
-                        <label>
-                            <input type="radio" value="variation" name="type" x-model="jenis" class="mr-1"> Variation
-                        </label>
-                    </div>
+              <div x-show="jenis === 'single'">
+                <label class="block font-semibold mb-1">Harga (Rp)</label>
+                <input type="number" name="price" class="border rounded w-full p-2">
+              </div>
 
-                    <div x-show="jenis === 'single'">
-                        <label class="block font-semibold mb-1">Harga (Rp)</label>
-                        <input type="number" name="price" class="border rounded w-full p-2">
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-1 mt-2">Status Produk</label>
-                        <select name="status" class="border rounded w-full p-2" required>
-                            <option value="diajukan">Diajukan</option>
-                            <option value="diterima">Diterima</option>
-                            <option value="ditolak">Ditolak</option>
-                            <option value="revisi">Revisi</option>
-                        </select>
-                    </div>
-                </div>
+              <div>
+                <label class="block font-semibold mb-1 mt-2">Status Produk</label>
+                <select name="status" class="border rounded w-full p-2" required>
+                  <option value="diajukan">Diajukan</option>
+                  <option value="diterima">Diterima</option>
+                  <option value="ditolak">Ditolak</option>
+                  <option value="revisi">Revisi</option>
+                </select>
+              </div>
             </div>
+          </div>
 
-            <!-- Variasi Produk -->
-            <div x-show="jenis === 'variation'" class="mt-6 border-t pt-6">
-                <h2 class="text-lg font-semibold mb-4">Variasi Produk</h2>
+          <!-- VARIASI -->
+          <div x-show="jenis === 'variation'" class="mt-6 border-t pt-6">
+            <h2 class="text-lg font-semibold mb-4">Variasi Produk</h2>
 
-                <template x-for="(options, label) in attributeOptions" :key="label">
-                    <div class="mb-4">
-                        <label class="block font-semibold mb-1" x-text="label"></label>
-                        <select multiple class="w-full border rounded p-2"
-                            @change="selectedValues[label] = Array.from($event.target.selectedOptions).map(o => o.value); generateCombinations();">
-                            <template x-for="option in options" :key="option">
-                                <option :value="option" x-text="option"></option>
-                            </template>
-                        </select>
-                    </div>
-                </template>
+            <template x-for="(options, label) in attributeOptions" :key="label">
+              <div class="mb-4">
+                <label class="block font-semibold mb-1" x-text="label"></label>
+                <select multiple class="w-full border rounded p-2"
+                  @change="selectedValues[label] = Array.from($event.target.selectedOptions).map(o => o.value); generateCombinations();">
+                  <template x-for="option in options" :key="option">
+                    <option :value="option" x-text="option"></option>
+                  </template>
+                </select>
+              </div>
+            </template>
 
-                <div x-show="kombinasi.length > 0" class="mt-6">
-                    <h3 class="text-md font-bold mb-2">Kombinasi Variasi</h3>
-                    <table class="w-full border text-sm text-left">
-                        <thead>
-                            <tr class="bg-gray-200 text-gray-700">
-                                <th class="p-2 border">Kombinasi</th>
-                                <th class="p-2 border">Harga (Rp)</th>
-                                <th class="p-2 border">Stok</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="(item, index) in kombinasi" :key="index">
-                                <tr>
-                                    <td class="p-2 border" x-text="item.label"></td>
-                                    <td class="p-2 border">
-                                        <input type="number" :name="'kombinasi[' + index + '][price]'" class="w-full border p-1 rounded" required>
-                                    </td>
-                                    <td class="p-2 border">
-                                        <input type="number" :name="'kombinasi[' + index + '][stock]'" class="w-full border p-1 rounded" required>
-                                    </td>
-                                    <input type="hidden" :name="'kombinasi[' + index + '][label]'" :value="item.label">
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
+            <div x-show="kombinasi.length > 0" class="mt-6">
+              <h3 class="text-md font-bold mb-2">Kombinasi Variasi</h3>
+              <table class="w-full border text-sm text-left">
+                <thead>
+                  <tr class="bg-gray-200 text-gray-700">
+                    <th class="p-2 border">Kombinasi</th>
+                    <th class="p-2 border">Harga (Rp)</th>
+                    <th class="p-2 border">Stok</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="(item, index) in kombinasi" :key="index">
+                    <tr>
+                      <td class="p-2 border" x-text="item.label"></td>
+                      <td class="p-2 border">
+                        <input type="number" :name="'kombinasi[' + index + '][price]'" class="w-full border p-1 rounded" required>
+                      </td>
+                      <td class="p-2 border">
+                        <input type="number" :name="'kombinasi[' + index + '][stock]'" class="w-full border p-1 rounded" required>
+                      </td>
+                      <input type="hidden" :name="'kombinasi[' + index + '][label]'" :value="item.label">
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
             </div>
+          </div>
 
-            <div class="text-right mt-6">
-                <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800">
-                    Simpan Produk
-                </button>
-            </div>
+          <div class="text-right mt-6">
+            <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800">
+              Simpan Produk
+            </button>
+          </div>
         </form>
       </div>
     </main>
   </div>
 
   <script>
-  function produkForm() {
-    return {
-      jenis: 'single',
-      previewImages: [],
-      attributeOptions: {
-        Warna: ['Merah', 'Kuning', 'Biru', 'Hijau', 'Hitam', 'Putih'],
-        'Ukuran Baju': ['S', 'M', 'L', 'XL', 'XXL'],
-        'Ukuran Kaki': ['35','36','37','38','39','40','41','42','43','44','45'],
-        Berat: ['100gr', '250gr', '500gr', '1kg'],
-        Volume: ['250ml', '500ml', '1L'],
-        Rasa: ['Original', 'Keju', 'Cokelat', 'Pedas'],
-      },
-      selectedValues: {},
-      kombinasi: [],
-      handlePreview(event) {
-        this.previewImages = [];
-        const files = event.target.files;
-        if (files.length > 3) {
-          alert("Maksimal 3 gambar yang bisa diunggah.");
-          event.target.value = "";
-          return;
+    function produkForm() {
+      return {
+        jenis: 'single',
+        previewImages: [],
+        attributeOptions: {
+          Warna: ['Merah', 'Kuning', 'Biru', 'Hijau', 'Hitam', 'Putih'],
+          'Ukuran Baju': ['S', 'M', 'L', 'XL', 'XXL'],
+          'Ukuran Kaki': ['35','36','37','38','39','40','41','42','43','44','45'],
+          Berat: ['100gr', '250gr', '500gr', '1kg'],
+          Volume: ['250ml', '500ml', '1L'],
+          Rasa: ['Original', 'Keju', 'Cokelat', 'Pedas'],
+        },
+        selectedValues: {},
+        kombinasi: [],
+        handlePreview(event) {
+          this.previewImages = [];
+          const files = event.target.files;
+          if (files.length > 3) {
+            alert("Maksimal 3 gambar yang bisa diunggah.");
+            event.target.value = "";
+            return;
+          }
+          Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = e => {
+              this.previewImages.push(e.target.result);
+            };
+            reader.readAsDataURL(file);
+          });
+        },
+        removeImage(index) {
+          this.previewImages.splice(index, 1);
+        },
+        generateCombinations() {
+          const entries = Object.entries(this.selectedValues).filter(([k, v]) => v.length);
+          if (entries.length < 2) {
+            this.kombinasi = [];
+            return;
+          }
+          const cartesian = (arr) => arr.reduce((a, b) => a.flatMap(d => b.map(e => [].concat(d, e))));
+          const result = cartesian(entries.map(([_, v]) => v));
+          this.kombinasi = result.map(combo => {
+            const label = combo.join(' + ');
+            return { label };
+          });
         }
-        Array.from(files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            this.previewImages.push(e.target.result);
-          };
-          reader.readAsDataURL(file);
-        });
-      },
-      removeImage(index) {
-        this.previewImages.splice(index, 1);  // Remove the image at the selected index
-      },
-      generateCombinations() {
-        const entries = Object.entries(this.selectedValues).filter(([k, v]) => v.length);
-        if (entries.length < 2) {
-          this.kombinasi = [];
-          return;
-        }
-        const cartesian = (arr) => arr.reduce((a, b) => a.flatMap(d => b.map(e => [].concat(d, e))));
-        const result = cartesian(entries.map(([_, v]) => v));
-        this.kombinasi = result.map(combo => {
-          const label = combo.join(' + ');
-          return { label };
-        });
-      }
-    };
-  }
-</script>
+      };
+    }
+  </script>
 </body>
 </html>

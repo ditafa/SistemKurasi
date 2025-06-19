@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard Admin</title>
+  <title>List Produk</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
 <body class="bg-[#F8FFF9] text-gray-700 font-sans min-h-screen flex flex-col">
   <div class="flex flex-1">
-
-    <!-- Sidebar Desktop -->
     <aside class="hidden md:flex md:flex-col md:justify-between md:w-64 md:h-screen fixed bg-[#14532D] text-white p-6 z-10">
       <div>
         <div class="flex items-center justify-between mb-10">
@@ -26,7 +24,6 @@
             <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-md hover:bg-white/10">Dashboard</a>
             <a href="{{ route('admin.products.index') }}" class="block px-3 py-2 rounded-md hover:bg-white/10">Daftar Produk</a>
             <a href="{{ route('admin.kategori.index') }}" class="block px-3 py-2 rounded-md hover:bg-white/10">Kategori</a>
-            <a href="{{ route('admin.notifikasi') }}" class="block px-3 py-2 rounded-md hover:bg-white/10">Notifikasi</a>
             <a href="{{ route('admin.statistik') }}" class="block px-3 py-2 rounded-md hover:bg-white/10">Statistik</a>
             <form action="{{ route('admin.logout') }}" method="POST">
               @csrf
@@ -53,7 +50,6 @@
         <a href="{{ route('admin.dashboard') }}" class="hover:text-green-200">Dashboard</a>
         <a href="{{ route('admin.products.index') }}" class="hover:text-green-200">Daftar Produk</a>
         <a href="{{ route('admin.kategori.index') }}" class="hover:text-green-200">Kategori</a>
-        <a href="{{ route('admin.notifikasi') }}" class="hover:text-green-200">Notifikasi</a>
         <a href="{{ route('admin.statistik') }}" class="hover:text-green-200">Statistik</a>
         <form action="{{ route('admin.logout') }}" method="POST">
           @csrf
@@ -67,8 +63,7 @@
       <div class="max-w-6xl mx-auto">
         <a href="{{ route('admin.kategori.create') }}"
            class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4">
-          + Tambah Kategori
-        </a>
+          + Tambah Kategori</a>
 
         <h1 class="text-2xl font-semibold mb-4">Kategori</h1>
 

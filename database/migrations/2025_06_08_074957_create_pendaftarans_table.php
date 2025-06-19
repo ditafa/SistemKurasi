@@ -12,19 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pendaftarans', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_pemilik');
-            $table->string('nama_usaha');
-            $table->string('email');
-            $table->string('telepon');
-            $table->text('alamat');
-            $table->string('nama_produk');
-            $table->string('kategori');
-            $table->text('deskripsi');
-            $table->integer('harga');
-            $table->json('foto');
-            $table->timestamps();
-        });
+        $table->id();
+        $table->string('nama_pemilik');
+        $table->string('nama_usaha')->index();
+        $table->string('email')->index();
+        $table->string('telepon');
+        $table->text('alamat');
+        $table->string('nama_produk');
+        $table->string('kategori', 50);
+        $table->text('deskripsi');
+        $table->unsignedInteger('harga');
+        $table->json('foto');
+        $table->enum('status', ['menunggu', 'diterima', 'ditolak'])->default('menunggu');
+        $table->timestamps();
+    });
     }
 
     /**

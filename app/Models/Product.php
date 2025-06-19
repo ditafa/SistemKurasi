@@ -28,17 +28,17 @@ class Product extends Model
         'color',
         'size',
     ];
-
         public function user()
     {
         return $this->belongsTo(User::class, 'pedagang_id');
     }
 
-    public function variations()
-    {
-        return $this->hasMany(\App\Models\ProductVariation::class);
-    }
+    // app/Models/Product.php
 
+public function variations()
+{
+    return $this->hasMany(ProductVariation::class);
+}
 
     public function category()
     {

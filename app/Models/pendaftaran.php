@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class pendaftaran extends Model
+class Pendaftaran extends Model
 {
     use HasFactory;
 
@@ -19,5 +20,9 @@ class pendaftaran extends Model
         'deskripsi',
         'harga',
         'foto',
+    ];
+
+    protected $casts = [
+        'foto' => 'array',
     ];
 }

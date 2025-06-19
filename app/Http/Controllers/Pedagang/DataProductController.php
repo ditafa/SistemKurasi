@@ -10,14 +10,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DataProductController extends Controller
 {
+
+    public function dashboard()
+    {
+        return view('pedagang.dashboard');
+    }
+
     public function index(Request $request)
     {
         $pedagang = Auth::guard('pedagang')->user();
 
-        $query = Product::where('pedagang_id', $pedagang->id)->with(['photos', 'variations']);
+        $query = Product::where('pedagang_id', $pedagang->id)
+                        ->with(['photos', 'variations'])
+                        ->orderBy('created_at', 'desc');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -31,36 +40,35 @@ class DataProductController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $products = $query->paginate(10)->withQueryString();
+            $products = $query->with('variations')->paginate(8)->withQueryString();
 
-        // Hitung harga & stok display
-        foreach ($products as $product) {
-            if ($product->type === 'variation') {
-                $minPrice = $product->variations->min('price');
-                $maxPrice = $product->variations->max('price');
+            foreach ($products as $product) {
+                if ($product->type === 'variation') {
+                    if ($product->variations->count() > 0) {
+                        $minPrice = $product->variations->min('price') ?? 0;
+                        $maxPrice = $product->variations->max('price') ?? 0;
 
-                if ($minPrice === $maxPrice) {
-                    $product->display_price = $minPrice ?? 0;
+                        if ($minPrice === $maxPrice) {
+                            $product->display_price = 'Rp ' . number_format($minPrice, 0, ',', '.');
+                        } else {
+                            $product->display_price = 'Rp ' . number_format($minPrice, 0, ',', '.') . ' - Rp ' . number_format($maxPrice, 0, ',', '.');
+                        }
+
+                        $product->display_stock = $product->variations->sum('stock');
+                    } else {
+                        $product->display_price = 'Rp 0';
+                        $product->display_stock = 0;
+                    }
                 } else {
-                    $product->display_price = "{$minPrice} - {$maxPrice}";
+                    $product->display_price = 'Rp ' . number_format($product->price ?? 0, 0, ',', '.');
+                    $product->display_stock = $product->stock ?? 0;
                 }
-
-                $product->display_stock = $product->variations->sum('stock');
-            } else {
-                $product->display_price = $product->price;
-                $product->display_stock = $product->stock;
             }
-        }
 
-        $categories = Category::all();
+                    $categories = Category::all();
 
-        return view('pedagang.products.index', compact('products', 'categories'));
-    }
-
-    public function dashboard()
-    {
-        return view('pedagang.dashboard');
-    }
+                    return view('pedagang.products.index', compact('products', 'categories'));
+                }
 
     public function create()
     {
@@ -72,42 +80,103 @@ class DataProductController extends Controller
     }
 
     public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'category_id' => 'required|integer|exists:categories,id',
+        'description' => 'required|string',
+        'type' => 'required|in:single,variation',
+        'price' => 'nullable|numeric|min:0',
+        'stock' => 'nullable|integer|min:0',
+        'gambar' => 'required|image|max:2048', // max 2MB
+        'photos.*' => 'nullable|image|max:2048',
+    ]);
+
+    $product = new Product();
+    $product->pedagang_id = auth()->guard('pedagang')->id();
+    $product->category_id = $request->category_id;
+    $product->name = $request->name;
+    $product->description = $request->description;
+    $product->type = $request->type;
+    $product->status = 'pending';
+    $product->kurasi_status = 'belum_dikurasi';
+
+    if ($request->type === 'single') {
+        $product->price = $request->price;
+        $product->stock = $request->stock;
+    } elseif ($request->type === 'variation') {
+        $minPrice = collect($request->input('variations'))->min('price');
+        $product->price = $minPrice ?? 0;
+        $product->stock = null;
+    }
+
+    // Simpan gambar utama
+    if ($request->hasFile('gambar')) {
+        $product->gambar = $request->file('gambar')->store('produk', 'public');
+    }
+
+    $product->save();
+
+    // Simpan foto tambahan jika ada
+    if ($request->hasFile('photos')) {
+        foreach ($request->file('photos') as $photo) {
+            $product->photos()->create([
+                'path' => $photo->store('produk', 'public'),
+            ]);
+        }
+    }
+
+    // Simpan variasi jika tipe adalah variation
+    if ($request->type === 'variation') {
+        foreach ($request->input('variations') as $variation) {
+            $product->variations()->create([
+                'attributes' => $variation['attributes'],
+                'price' => $variation['price'],
+                'stock' => $variation['stock'],
+            ]);
+        }
+    }
+
+    return redirect()->route('pedagang.produk.index')->with('success', 'Produk berhasil ditambahkan.');
+}
+
+
+    public function show($id)
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'category_id' => 'required',
-            'description' => 'required|string',
-            'type' => 'required|in:single,variation',
-            'price' => 'nullable|numeric',
-            'stock' => 'nullable|integer',
-            'variations' => 'array',
-            'variations.*.price' => 'nullable|numeric',
-            'variations.*.stock' => 'nullable|integer',
-            'variations.*.attributes' => 'nullable|string',
-        ]);
+        $pedagang = Auth::guard('pedagang')->user();
 
-        $product = Product::create([
-            'name' => $data['name'],
-            'category_id' => $data['category_id'],
-            'description' => $data['description'],
-            'type' => $data['type'],
-            'price' => $data['type'] === 'single' ? $data['price'] : null,
-            'stock' => $data['type'] === 'single' ? $data['stock'] : null,
-            'pedagang_id' => auth()->user()->id,
-            'status' => 'diajukan',
-        ]);
-
-        if ($data['type'] === 'variation' && isset($data['variations'])) {
-            foreach ($data['variations'] as $variation) {
-                $product->variations()->create([
-                    'attributes' => $variation['attributes'],
-                    'price' => $variation['price'] ?? 0,
-                    'stock' => $variation['stock'] ?? 0,
-                ]);
-            }
+        if (!$pedagang) {
+            return redirect()->route('pedagang.login')->with('error', 'Anda harus login terlebih dahulu.');
         }
 
-        return redirect()->route('pedagang.produk.index')->with('success', 'Produk berhasil ditambahkan');
+        $product = Product::with([
+            'category',
+            'photos',
+            'variations.variation_options',
+            'curationTimelines' => fn ($q) => $q->orderBy('created_at', 'desc'),
+            'statusHistories'
+        ])->where('pedagang_id', $pedagang->id)->findOrFail($id);
+
+        $warna = [];
+        $ukuran = [];
+
+        if ($product->type === 'variation') {
+            foreach ($product->variations as $variation) {
+                foreach ($variation->variation_options as $option) {
+                    $attr = strtolower($option['attribute']);
+                    if ($attr === 'warna') {
+                        $warna[] = $option['value'];
+                    } elseif (in_array($attr, ['ukuran', 'ukuran kaki', 'ukuran baju'])) {
+                        $ukuran[] = $option['value'];
+                    }
+                }
+            }
+
+            $warna = array_unique($warna);
+            $ukuran = array_unique($ukuran);
+        }
+
+        return view('pedagang.products.detail_produk', compact('product', 'warna', 'ukuran'));
     }
 
     public function edit($id)
@@ -122,12 +191,12 @@ class DataProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $pedagang = Auth::guard('pedagang')->user();
+        $this->authorize('update', $product);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required_if:type,single|nullable|numeric|min:0',
             'type' => 'required|in:single,variation',
             'status' => 'required|in:diajukan,diterima,ditolak,revisi',
             'category_id' => 'required|exists:categories,id',
@@ -147,17 +216,14 @@ class DataProductController extends Controller
             $product->gambar = $request->file('gambar')->store('produk', 'public');
         }
 
-        $product->update([
-            'name' => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'price' => $validated['price'],
-            'type' => $validated['type'],
-            'status' => $validated['status'],
-            'category_id' => $validated['category_id'],
-            'color' => $validated['color'] ?? null,
-            'size' => $validated['size'] ?? null,
-            'gambar' => $product->gambar,
-        ]);
+        if ($request->type === 'variation') {
+    $validated = $request->validate([
+        'variations' => 'required|array',
+        'variations.*.attributes' => 'required|string',
+        'variations.*.price' => 'required|numeric|min:0',
+        'variations.*.stock' => 'required|integer|min:0',
+    ]);
+}
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
@@ -181,6 +247,18 @@ class DataProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $this->authorize('delete', $product);
+
+        // Hapus foto dan variasi juga
+        foreach ($product->photos as $photo) {
+            Storage::disk('public')->delete($photo->url);
+            $photo->delete();
+        }
+
+        $product->variations()->delete();
+
+        if ($product->gambar) {
+            Storage::disk('public')->delete($product->gambar);
+        }
 
         $product->delete();
 
@@ -216,54 +294,4 @@ class DataProductController extends Controller
 
         return back()->with('success', 'Foto berhasil dihapus.');
     }
-
-    public function show($id)
-{
-    // Mendapatkan pedagang yang sedang login
-    $pedagang = Auth::guard('pedagang')->user();
-
-    // Pastikan pedagang ada
-    if (!$pedagang) {
-        return redirect()->route('pedagang.login')->with('error', 'Anda harus login terlebih dahulu.');
-    }
-
-    // Ambil produk dengan relasi yang dibutuhkan
-    $product = Product::with([
-        'category',
-        'photos',
-        'variations',
-        'curationTimelines' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        },
-        'statusHistories' // Pastikan relasi ini sesuai dengan yang ada di model
-    ])
-    ->where('pedagang_id', $pedagang->id)
-    ->findOrFail($id);
-
-    // Inisialisasi array untuk warna dan ukuran
-    $warna = [];
-    $ukuran = [];
-
-    // Periksa apakah tipe produk adalah 'variation'
-    if ($product->type === 'variation') {
-        // Loop melalui variasi produk
-        foreach ($product->variations as $variation) {
-            foreach ($variation->variation_options as $option) {
-                // Kategorikan atribut berdasarkan 'warna' atau 'ukuran'
-                if (strtolower($option['attribute']) === 'warna') {
-                    $warna[] = $option['value'];
-                } elseif (in_array(strtolower($option['attribute']), ['ukuran', 'ukuran kaki', 'ukuran baju'])) {
-                    $ukuran[] = $option['value'];
-                }
-            }
-        }
-
-        // Hilangkan nilai warna dan ukuran yang duplikat
-        $warna = array_unique($warna);
-        $ukuran = array_unique($ukuran);
-    }
-
-    // Kirim variabel ke view
-    return view('pedagang.products.detail_produk', compact('product', 'warna', 'ukuran'));
-}
 }
